@@ -8,9 +8,8 @@ corpid = ""
 corpsecret = ""
 agentid = ""
 # 和风天气key
-qweather_key = ""
+qweather_key = ''
 # 天气预报地址
-# 城市
 city = ""
 
 
@@ -86,8 +85,7 @@ def get_today_weater():
 
 def get_ciba():
     ciba_url = "http://open.iciba.com/dsapi/"
-    r = requests.get(ciba_url)
-    r = json.loads(r.text)
+    r = requests.get(ciba_url).json()
     ciba_content = r["content"]
     ciba_share = r["fenxiang_img"]
     ciba_note = r["note"]
@@ -95,6 +93,17 @@ def get_ciba():
         "ciba_content": ciba_content,
         "ciba_share": ciba_share,
         "ciba_note": ciba_note
+    }
+
+
+def get_one():
+    one_url = "https://apier.youngam.cn/essay/one"
+    r = requests.get(one_url).json()['dataList'][0]
+    one_pic = r['src']
+    one_text = r['text']
+    return {
+        "one_pic": one_pic,
+        "one_text": one_text
     }
 
 
@@ -108,12 +117,19 @@ def handle_message():
     bing_pic = bing_data["bing_pic"]
     bing_title = bing_data["bing_title"]
     bing_content = bing_data["bing_content"]
+
     ciba_data = get_ciba()
     ciba_content = ciba_data["ciba_content"]
     ciba_share = ciba_data["ciba_share"]
     ciba_note = ciba_data["ciba_note"]
+
+    one_data = get_one()
+    one_pic = one_data["one_pic"]
+    one_text = one_data["one_text"]
+
     weather_info = weather_data["weather_info"]
     weather_link = weather_data["weather_link"]
+
     article = [{
         "title": today_date+"\n"+bing_title,
         "url": f"https://ii.vercel.app/show/?t={bing_title}&p={bing_pic}&c={bing_content}",
@@ -122,6 +138,10 @@ def handle_message():
         "title": ciba_content+"\n"+ciba_note,
         "url": f"https://ii.vercel.app/show/?t={ciba_content}&p={ciba_share}&c={ciba_note}",
         "picurl": ciba_share
+    }, {
+        "title": one_text,
+        "url": f"https://ii.vercel.app/show/?t=「ONE·一个」&p={one_pic}&c={one_text}",
+        "picurl": one_pic
     }, {
         "title": city + "天气："+weather_info,
         "url": weather_link,
@@ -151,10 +171,9 @@ def get_token(corpid, corpsecret):
         'corpid': corpid,
         'corpsecret': corpsecret,
     }
-    req = requests.get(url, params=values)
-    data = json.loads(req.text)
-    if data["errcode"] == 0:
-        return data["access_token"]
+    res = requests.get(url, params=values).json()
+    if res["errcode"] == 0:
+        return res["access_token"]
     else:
         print("企业微信access_token获取失败: " + str(data))
         return None
@@ -168,13 +187,12 @@ def push():
     if token is None:
         return
     url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + token
-    resp = requests.post(url, json=values)
-    data = json.loads(resp.text)
-    if data["errcode"] == 0:
+    res = requests.post(url, json=values).json()
+    if res["errcode"] == 0:
         print("企业微信消息发送成功")
         return 1
-    elif data["errcode"] != 0:
-        print("企业微信消息发送失败: "+str(data))
+    elif res["errcode"] != 0:
+        print("企业微信消息发送失败: "+str(res))
         return 0
 
 

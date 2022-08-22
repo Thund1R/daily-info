@@ -3,20 +3,21 @@
 
 ## Introduction
 
-- Bing必应每日壁纸
-- 金山词霸每日一句
-- 和风天气
+- Bing必应 每日壁纸
+- 金山词霸 每日一句
+- 和风天气 天气预报
+- ONE·一个 一图一句
 - 多图文并自带图文展示页
 
 ## Preparation
 
-|     参数     |        含义         | 备注 |
-| :----------: | :-----------------: | :--: |
-|    corpid    |   企业微信企业ID    | 必填 |
-|  corpsecret  | 企业微信应用Secret  | 必填 |
-|   agentid    | 企业微信应用AgentId | 必填 |
-| qweather_key |   和风天气应用Key   | 必填 |
-|     city     |      市/区/县       | 必填 |
+|     参数     |         含义          | 备注 |
+| :----------: | :-------------------: | :--: |
+|    corpid    |    企业微信企业ID     | 必填 |
+|  corpsecret  |  企业微信应用Secret   | 必填 |
+|   agentid    |  企业微信应用AgentId  | 必填 |
+| qweather_key |    和风天气应用Key    | 必填 |
+|     city     | 天气预报地址 市/区/县 | 必填 |
 
 ## Preview
 
