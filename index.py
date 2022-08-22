@@ -8,7 +8,7 @@ corpid = ""
 corpsecret = ""
 agentid = ""
 # 和风天气key
-qweather_key = ''
+qweather_key = ""
 # 天气预报地址
 city = ""
 
@@ -80,20 +80,7 @@ def get_today_weater():
         print("获取天气失败！")
         return None
 
-# 获取词霸图片与每日一句
-
-
-def get_ciba():
-    ciba_url = "http://open.iciba.com/dsapi/"
-    r = requests.get(ciba_url).json()
-    ciba_content = r["content"]
-    ciba_share = r["fenxiang_img"]
-    ciba_note = r["note"]
-    return {
-        "ciba_content": ciba_content,
-        "ciba_share": ciba_share,
-        "ciba_note": ciba_note
-    }
+# 获取一个图文
 
 
 def get_one():
@@ -118,11 +105,6 @@ def handle_message():
     bing_title = bing_data["bing_title"]
     bing_content = bing_data["bing_content"]
 
-    ciba_data = get_ciba()
-    ciba_content = ciba_data["ciba_content"]
-    ciba_share = ciba_data["ciba_share"]
-    ciba_note = ciba_data["ciba_note"]
-
     one_data = get_one()
     one_pic = one_data["one_pic"]
     one_text = one_data["one_text"]
@@ -134,10 +116,6 @@ def handle_message():
         "title": today_date+"\n"+bing_title,
         "url": f"https://ii.vercel.app/show/?t={bing_title}&p={bing_pic}&c={bing_content}",
         "picurl": bing_pic
-    }, {
-        "title": ciba_content+"\n"+ciba_note,
-        "url": f"https://ii.vercel.app/show/?t={ciba_content}&p={ciba_share}&c={ciba_note}",
-        "picurl": ciba_share
     }, {
         "title": one_text,
         "url": f"https://ii.vercel.app/show/?t=「ONE·一个」&p={one_pic}&c={one_text}",
@@ -175,7 +153,7 @@ def get_token(corpid, corpsecret):
     if res["errcode"] == 0:
         return res["access_token"]
     else:
-        print("企业微信access_token获取失败: " + str(data))
+        print("企业微信access_token获取失败: " + str(res))
         return None
 
 # 推送信息
