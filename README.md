@@ -5,18 +5,20 @@
 
 - Bing必应 每日壁纸
 - 和风天气 天气预报
+- 金山词霸 每日一句
 - ONE·一个 一图一句
 - 多图文并自带图文展示页
 
 ## Preparation
 
-|     参数     |         含义          | 备注 |
-| :----------: | :-------------------: | :--: |
-|    corpid    |    企业微信企业ID     | 必填 |
-|  corpsecret  |  企业微信应用Secret   | 必填 |
-|   agentid    |  企业微信应用AgentId  | 必填 |
-| qweather_key |    和风天气应用Key    | 必填 |
-|     city     | 天气预报地址 市/区/县 | 必填 |
+|   环境变量   |                含义                | 备注 |
+| :----------: | :--------------------------------: | :--: |
+|    corpid    |           企业微信企业ID           | 必填 |
+|  corpsecret  |         企业微信应用Secret         | 必填 |
+|   agentid    |        企业微信应用AgentId         | 必填 |
+| qweather_key |          和风天气应用Key           | 必填 |
+|     city     |       天气预报地址 市/区/县        | 必填 |
+|      TZ      | 时区，国内用户填 **Asia/Shanghai** | 必填 |
 
 ## Preview
 
@@ -28,7 +30,7 @@
 
 ### 1.创建函数：
 
-新建 / 从头开始 / 事件函数 / 环境 Python3.6 / 内存 64MB / 执行超时时间 900秒 / 环境变量填入 **TZ**（Key） **Asia/Shanghai**（Value）/ 自行设置触发器，其余内容保持默认 / 完成
+新建 / 从头开始 / 事件函数 / 环境 Python3.6 / 内存 64MB / 执行超时时间 900秒 / 填入环境变量 / 自行设置触发器，其余内容默认 / 完成
 
 ### 2. 克隆代码：
 
@@ -41,10 +43,6 @@ git clone https://gitee.com/thund1r/daily-info.git
 ```shell
 mv daily-info src
 ```
-
-### 3.完善配置：
-
-完善 **src/index.py** 中的参数**corpid**、**corpsecret**、**agentid**、**qweather_key**、**city** 配置
 
 点击**部署**，部署成功后点击**测试**，查看日志输出以及微信消息
 
