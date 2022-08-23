@@ -4,14 +4,12 @@ import datetime
 import re
 import config
 
-# 企业微信机器人配置
 corpid = config.get("corpid")
 corpsecret = config.get("corpsecret")
 agentid = config.get("agentid")
-# 和风天气key
-qweather_key = config.get("qweather_key")
-# 天气预报地址
+qweather = config.get("qweather")
 city = config.get("city")
+birthday = config.get("birthday")
 
 
 # 获取当前日期
@@ -52,7 +50,7 @@ def get_bing():
 
 
 def get_city_id():
-    city_url = f'https://geoapi.qweather.com/v2/city/lookup?key={qweather_key}&location={city}'
+    city_url = f'https://geoapi.qweather.com/v2/city/lookup?key={qweather}&location={city}'
     city_json = requests.get(city_url).json()
     city_code = city_json["code"]
     if city_code.__eq__("200"):
@@ -66,7 +64,7 @@ def get_city_id():
 
 def get_today_weater():
     city_id = get_city_id()
-    weather_url = f"https://devapi.qweather.com/v7/weather/3d?key={qweather_key}&location={city_id}"
+    weather_url = f"https://devapi.qweather.com/v7/weather/3d?key={qweather}&location={city_id}"
     weather_json = requests.get(weather_url).json()
     weather_link = weather_json["fxLink"]
     res_code = weather_json["code"]
@@ -110,6 +108,48 @@ def get_one():
     }
 
 
+def get_birthday():
+    today = datetime.date.today()
+    this_year = datetime.datetime.now().year
+    birthday_year = birthday.split("-")[0]
+    # 判断是否为农历生日
+    if birthday_year[0] == "n":
+        lunar_mouth = int(birthday.split("-")[1])
+        lunar_day = int(birthday.split("-")[2])
+        # 今年生日
+        year_date = ZhDate(this_year, lunar_mouth,
+                           lunar_day).to_datetime().date()
+    else:
+        # 获取国历生日的今年对应月和日
+        solar_month = int(birthday.split("-")[1])
+        solar_day = int(birthday.split("-")[2])
+        # 今年生日
+        year_date = datetime.date(this_year, solar_month, solar_day)
+    # 计算生日年份，如果还没过，按当年减，如果过了需要+1
+    if today > year_date:
+        if birthday_year[0] == "n":
+            # 获取农历明年生日的月和日
+            lunar_last_birthday = ZhDate(
+                (this_year + 1), lunar_mouth, lunar_day).to_datetime().date()
+            birth_date = datetime.date(
+                (this_year + 1), lunar_last_birthday.month, lunar_last_birthday.day)
+        else:
+            birth_date = datetime.date(
+                (this_year + 1), solar_month, solar_day)
+        remain_day = str(birth_date.__sub__(today)).split(" ")[0]
+        tip = "距离生日还有" + remain_day + "天哦~"
+    elif today == year_date:
+        remain_day = 0
+        tip = "就是今天啦！生日快乐~"
+    else:
+        birth_date = year_date
+        remain_day = str(birth_date.__sub__(today)).split(" ")[0]
+        tip = "距离生日还有" + remain_day + "天哦~"
+    return {
+        "birth_tip": tip
+    }
+
+
 # 处理信息
 
 
@@ -130,9 +170,6 @@ def handle_message():
     one_pic = one_data["one_pic"]
     one_text = one_data["one_text"]
 
-    weather_info = weather_data["weather_info"]
-    weather_link = weather_data["weather_link"]
-
     article = [{
         "title": today_date+"\n"+bing_title,
         "url": f"https://ii.vercel.app/show/?t={bing_title}&p={bing_pic}&c={bing_content}",
@@ -145,11 +182,27 @@ def handle_message():
         "title": one_text,
         "url": f"https://ii.vercel.app/show/?t=「ONE·一个」&p={one_pic}&c={one_text}",
         "picurl": one_pic
-    }, {
-        "title": city + "天气："+weather_info,
-        "url": weather_link,
-        "picurl": get_pic()
     }]
+
+    if birthday:
+        birth_data = get_birthday()
+        birth_tip = birth_data["birth_tip"]
+        birth_pic = get_pic()
+        article.append({
+            "title": birth_tip,
+            "url": f"https://ii.vercel.app/show/?t=生日提醒&p={birth_pic}&c={birth_tip}",
+            "picurl": birth_pic
+        })
+
+    if qweather and city:
+        weather_info = weather_data["weather_info"]
+        weather_link = weather_data["weather_link"]
+        article.append({
+            "title": city + "天气："+weather_info,
+            "url": weather_link,
+            "picurl": get_pic()
+        })
+
     data = {
         "touser": "@all",
         "toparty": "",

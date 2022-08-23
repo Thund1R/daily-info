@@ -5,9 +5,11 @@ SYS_CONFIG = {
     "corpsecret": "",
     "agentid": "",
     # 和风天气key
-    "qweather_key": "",
+    "qweather": "",
     # 天气预报地址
-    "city": ""
+    "city": "",
+    # 生日
+    "birthday": ""
 }
 
 
