@@ -10,7 +10,10 @@ corpsecret = config.get("corpsecret")
 agentid = config.get("agentid")
 qweather = config.get("qweather")
 city = config.get("city")
-birthday = config.get("birthday")
+targetday = config.get("targetday").split("&&")
+targetname = config.get("targetname").split("&&")
+target_day = list(filter(None, targetday))
+target_name = list(filter(None, targetname))
 
 
 # 获取当前日期
@@ -101,55 +104,74 @@ def get_ciba():
 def get_one():
     one_url = "https://apier.youngam.cn/essay/one"
     r = requests.get(one_url).json()['dataList'][0]
+    one_id = r['id']
     one_pic = r['src']
     one_text = r['text']
     return {
+        "one_id": one_id,
         "one_pic": one_pic,
         "one_text": one_text
     }
 
 
-def get_birthday():
+def get_remain(target_day, target_name):
     today = datetime.date.today()
     this_year = datetime.datetime.now().year
-    birthday_year = birthday.split("-")[0]
-    # 判断是否为农历生日
-    if birthday_year[0] == "n":
-        lunar_mouth = int(birthday.split("-")[1])
-        lunar_day = int(birthday.split("-")[2])
-        # 今年生日
-        year_date = ZhDate(this_year, lunar_mouth,
+    target_day_year = target_day.split("-")[0]
+    # 判断是否为农历日期
+    if target_day_year[0] == "n":
+        lunar_mouth = int(target_day.split("-")[1])
+        lunar_day = int(target_day.split("-")[2])
+        # 今年日期
+        this_date = ZhDate(this_year, lunar_mouth,
                            lunar_day).to_datetime().date()
     else:
-        # 获取国历生日的今年对应月和日
-        solar_month = int(birthday.split("-")[1])
-        solar_day = int(birthday.split("-")[2])
-        # 今年生日
-        year_date = datetime.date(this_year, solar_month, solar_day)
-    # 计算生日年份，如果还没过，按当年减，如果过了需要+1
-    if today > year_date:
-        if birthday_year[0] == "n":
-            # 获取农历明年生日的月和日
-            lunar_last_birthday = ZhDate(
-                (this_year + 1), lunar_mouth, lunar_day).to_datetime().date()
-            birth_date = datetime.date(
-                (this_year + 1), lunar_last_birthday.month, lunar_last_birthday.day)
-        else:
-            birth_date = datetime.date(
-                (this_year + 1), solar_month, solar_day)
-        remain_day = str(birth_date.__sub__(today)).split(" ")[0]
-        tip = "距离生日还有" + remain_day + "天哦~"
-    elif today == year_date:
+        # 获取国历日期的今年对应月和日
+        solar_month = int(target_day.split("-")[1])
+        solar_day = int(target_day.split("-")[2])
+        # 今年日期
+        this_date = datetime.date(this_year, solar_month, solar_day)
+    # 计算日期年份，如果还没过，按当年减，如果过了需要+1
+    if today == this_date:
         remain_day = 0
-        tip = "就是今天啦！生日快乐~"
+        tip = f"🌟{target_name}就是今天啦！"
+    elif today > this_date:
+        if target_day_year[0] == "n":
+            # 获取农历明年日期的月和日
+            lunar_next_date = ZhDate(
+                (this_year + 1), lunar_mouth, lunar_day).to_datetime().date()
+            next_date = datetime.date(
+                (this_year + 1), lunar_next_date.month, lunar_next_date.day)
+        else:
+            next_date = datetime.date(
+                (this_year + 1), solar_month, solar_day)
+        remain_day = int(str(next_date.__sub__(today)).split(" ")[0])
+        tip = f"距离{target_name}还有 {remain_day} 天"
     else:
-        birth_date = year_date
-        remain_day = str(birth_date.__sub__(today)).split(" ")[0]
-        tip = "距离生日还有" + remain_day + "天哦~"
-    return {
-        "birth_tip": tip
-    }
+        next_date = this_date
+        remain_day = int(str(next_date.__sub__(today)).split(" ")[0])
+        tip = f"距离{target_name}还有 {remain_day} 天"
+    return (tip, remain_day)
 
+
+def get_elemzero(elem):
+    return elem[0]
+
+
+def get_elemone(elem):
+    return elem[1]
+
+
+def handle_target():
+    if target_day and target_name and len(target_day) == len(target_name):
+        r = list(map(get_remain, target_day, target_name))
+        r.sort(key=get_elemone)
+        res = list(map(get_elemzero, r))
+        target_tip = '\n'.join(res)
+        return target_tip
+    else:
+        print("请检查倒数日数据有效性与数量")
+        return None
 
 # 处理信息
 
@@ -168,6 +190,7 @@ def handle_message():
     ciba_note = ciba_data["ciba_note"]
 
     one_data = get_one()
+    one_id = one_data['one_id']
     one_pic = one_data["one_pic"]
     one_text = one_data["one_text"]
 
@@ -181,27 +204,28 @@ def handle_message():
         "picurl": ciba_share
     }, {
         "title": one_text,
-        "url": f"https://ii.vercel.app/show/?t=「ONE·一个」&p={one_pic}&c={one_text}",
+        "url": f"https://ii.vercel.app/show/?t=VOL.{one_id}&p={one_pic}&c={one_text}",
         "picurl": one_pic
     }]
 
-    if birthday:
-        birth_data = get_birthday()
-        birth_tip = birth_data["birth_tip"]
-        birth_pic = get_pic()
+    target_tip = handle_target()
+    if target_tip:
+        target_pic = get_pic()
+        target_content = target_tip.replace("\n", "\\n")
         article.append({
-            "title": birth_tip,
-            "url": f"https://ii.vercel.app/show/?t=生日提醒&p={birth_pic}&c={birth_tip}",
-            "picurl": birth_pic
+            "title": target_tip,
+            "url": f"https://ii.vercel.app/show/?t=📆倒数日&p={target_pic}&c={target_content}",
+            "picurl": target_pic
         })
 
     if qweather and city:
         weather_info = weather_data["weather_info"]
         weather_link = weather_data["weather_link"]
+        weather_pic = get_pic()
         article.append({
             "title": city + "天气："+weather_info,
             "url": weather_link,
-            "picurl": get_pic()
+            "picurl": weather_pic
         })
 
     data = {

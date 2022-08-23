@@ -8,8 +8,10 @@ SYS_CONFIG = {
     "qweather": "",
     # 天气预报地址
     "city": "",
-    # 生日
-    "birthday": ""
+    # 目标日期
+    "targetday": "",
+    # 目标名称
+    "targetname": ""
 }
 
 
