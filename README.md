@@ -20,24 +20,26 @@
 |  agentid   |                     企业微信应用AgentId                      |  必填  |
 |  qweather  |                       和风天气应用Key                        | 非必填 |
 |    city    |                    天气预报地址 市/区/县                     | 非必填 |
-| targetday  | 目标日期，公历格式：2001-01-01<br />农历年份前加n，格式：**n**2001-01-01<br />多日期以**&&**间隔<br />格式：2001-01-01&&n2001-01-01 | 非必填 |
-| targetname | 目标名称，多目标以**&&**间隔<br />注意与日期位置对应<br />格式：张三生日&&结婚纪念日 | 非必填 |
+| targetday  | 目标日期，公历格式：2001-01-01<br />农历年份前加n，格式：n2001-01-01<br />多日期以 && 间隔<br />格式：2001-01-01&&n2001-01-01 | 非必填 |
+| targetname | 目标名称，多目标以 && 间隔<br />注意与日期位置对应<br />格式：张三生日&&结婚纪念日 | 非必填 |
 
 ## Preview
 
-<div align=center><img src="pic/首页.jpg" width="150" alt="DiaryIndex"/>  <img src="pic/必应.jpg" width="150" alt="DiaryShow"/>  <img src="pic/金山词霸.jpg" width="150" alt="DiaryShow"/>  <img src="pic/和风.jpg" width="150" alt="DiaryShow"/></div>
+<div align=center><img src="pic/首页.jpg" width="150" alt="DiaryIndex"/>  <img src="pic/必应.jpg" width="150" alt="DiaryShow"/>  <img src="pic/金山.jpg" width="150" alt="DiaryShow"/></div>
+
+<div align=center><img src="pic/一个.jpg" width="150" alt="DiaryShow"/>  <img src="pic/倒数.jpg" width="150" alt="DiaryShow"/>  <img src="pic/和风.jpg" width="150" alt="DiaryShow"/></div>
 
 ## Deployment
 
 以腾讯云函数为例：
 
-### 1.创建函数：
+### 1. 创建函数：
 
 新建 / 从头开始 / 事件函数 / 环境 Python3.7 / 内存 64MB / 执行超时时间 900秒 / 填入环境变量 / 自行设置触发器，其余内容默认 / 完成
 
 ### 2. 克隆代码：
 
-函数代码 / 提交方法-在线编辑 / 点击 终端-新终端 / 复制粘贴执行以下命令
+函数代码 / 提交方法 - 在线编辑 / 点击 终端-新终端 / 复制粘贴执行以下命令
 
 ```shell
 rm -rf src
@@ -51,7 +53,7 @@ pip3 install zhdate requests -t .
 
 配置**触发器**即可实现每天定时消息推送
 
-### 3.更新代码：
+### 3. 更新代码：
 
 新终端执行以下命令
 
@@ -61,3 +63,8 @@ git pull
 ```
 
 更新完后再次部署和测试即可
+
+## Tip
+
+- ONE·一个每天更新时间为早上8:30，触发器早于此时间将收到前一天的一图一句。
+- 腾讯云日志服务CLS"免费额度"将于2022年9月5日0点结束，CLS全部资源将会执行按量计费。请在配置并测试好云函数之后及时前往 函数管理 - 函数配置 中关闭日志投递，并在 [日志服务 CLS 控制台](https://console.cloud.tencent.com/cls) - 日志主题 中删除相应日志主题。
