@@ -37,7 +37,7 @@
 
 新建 / 从头开始 / 事件函数 / 环境 Python3.7 / 内存 64MB / 执行超时时间 900秒 / 填入环境变量 / 自行设置触发器，其余内容默认 / 完成
 
-### 2. 克隆代码：
+### 2. 配置代码：
 
 函数代码 / 提交方法 - 在线编辑 / 点击 终端-新终端 / 复制粘贴执行以下命令
 
@@ -67,6 +67,6 @@ git pull
 ## Notice
 
 - **倒数日** 会自动排序，越接近的时间越显示在上方，以保证提醒的及时性。
-- **ONE·一个 **每天更新时间为早上8:30，触发器早于此时间将收到前一天的一图一句。
+- **ONE·一个** 每天更新时间为早上8:30，触发器早于此时间将收到前一天的一图一句。
 - 腾讯云日志服务CLS将于2022年9月5日开始执行按量计费。请在配置并测试好云函数之后及时前往 **函数管理 - 函数配置** 中关闭日志投递，并在 [日志服务 CLS 控制台](https://console.cloud.tencent.com/cls) - 日志主题 中删除相应日志主题。
-- **图文展示页 **来自我的项目 **Diary**——基于 Python Fastapi 部署于 Vercel 的简易图文展示，仅通过URL传递参数实现，不存储任何数据，开源地址  [Github](https://github.com/Thund1R/diary)   [Gitee](https://gitee.com/thund1r/diary)
+- **图文展示页** 来自我的项目 **Diary** —— 基于 Python Fastapi 部署于 Vercel 的简易图文展示，仅通过URL传递参数实现，不存储任何数据，开源地址  [Github](https://github.com/Thund1R/diary)     [Gitee](https://gitee.com/thund1r/diary)
