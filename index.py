@@ -10,15 +10,16 @@ corpid = config.get("corpid")
 corpsecret = config.get("corpsecret")
 agentid = config.get("agentid")
 qweather = config.get("qweather")
-city = config.get("city")
+city = config.get("city").split("&&")
+city_name_list = list(filter(None, city))
 targetday = config.get("targetday").split("&&")
 targetname = config.get("targetname").split("&&")
-target_day = list(filter(None, targetday))
-target_name = list(filter(None, targetname))
+target_day_list = list(filter(None, targetday))
+target_name_list = list(filter(None, targetname))
 beginday = config.get("beginday").split("&&")
 beginname = config.get("beginname").split("&&")
-begin_day = list(filter(None, beginday))
-begin_name = list(filter(None, beginname))
+begin_day_list = list(filter(None, beginday))
+begin_name_list = list(filter(None, beginname))
 
 
 # 获取当前日期
@@ -33,22 +34,22 @@ def get_time():
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     today_date = y + "年" + m + "月" + d + "日  " + week_list[w]
     now_time = a.strftime("%H:%M:%S")
-    time_tip = "你好"
+    today_tip = "你好"
     if "00:00:00" <= now_time < "06:00:00":
-        time_tip = "早上好~"
+        today_tip = "早上好~"
     if "06:00:00" <= now_time < "09:00:00":
-        time_tip = "早上好"
+        today_tip = "早上好"
     elif "9:00:00" <= now_time < "12:00:00":
-        time_tip = "上午好"
+        today_tip = "上午好"
     elif "12:00:00" <= now_time < "13:00:00":
-        time_tip = "中午好"
+        today_tip = "中午好"
     elif "13:00:00" <= now_time < "18:00:00":
-        time_tip = "下午好"
+        today_tip = "下午好"
     elif "18:00:00" <= now_time < "23:59:59":
-        time_tip = "晚上好"
+        today_tip = "晚上好"
     return {
         "today_date": today_date,
-        "time_tip": time_tip + " ~ " + get_emoticon()
+        "today_tip": today_tip + " ~ " + get_emoticon()
     }
 
 
@@ -68,7 +69,7 @@ def get_bing():
         bing_pic = "https://cn.bing.com/"+res["images"][0]["url"]
         bing_title = res["images"][0]["title"]
         bing_content = re.sub(u"\\(.*?\\)", "", res["images"][0]["copyright"])
-        bing_content = "🏞️"+bing_title+"——"+bing_content
+        bing_content = bing_title+"——"+bing_content
         return {
             "bing_pic": bing_pic,
             "bing_content": bing_content
@@ -80,14 +81,13 @@ def get_bing():
 # 获取和风天气数据
 
 
-def get_weather():
+def get_weather(city_name):
     try:
-        city_url = f"https://geoapi.qweather.com/v2/city/lookup?key={qweather}&location={city}"
+        city_url = f"https://geoapi.qweather.com/v2/city/lookup?key={qweather}&location={city_name}"
         city_json = requests.get(city_url).json()
         city_id = city_json["location"][0]["id"]
         weather_url = f"https://devapi.qweather.com/v7/weather/3d?key={qweather}&location={city_id}"
         weather_json = requests.get(weather_url).json()
-        weather_link = weather_json["fxLink"]
         temp = weather_json["daily"][0]
         textDay = temp["textDay"]
         tempMin = temp["tempMin"]
@@ -96,12 +96,9 @@ def get_weather():
         life_url = f"https://devapi.qweather.com/v7/indices/1d?type=3&location={city_id}&key={qweather}"
         life_json = requests.get(life_url).json()
         life_tip = "👔 "+life_json["daily"][0]["text"]
-        weather_info = f"{weather_icon} {city}{textDay}，{tempMin} ~ {tempMax} ℃" + \
+        weather_info = f"{weather_icon} {city_name}{textDay}，{tempMin} ~ {tempMax} ℃" + \
             "\n" + life_tip
-        return {
-            "weather_info": weather_info,
-            "weather_link": weather_link
-        }
+        return weather_info
     except Exception as e:
         print("获取和风天气数据出错:", e)
         return None
@@ -117,7 +114,16 @@ def get_weather_icon(text):
             break
     return weather_icon
 
-# 获取金山词霸数据
+
+def get_map_weather(city_name):
+    if qweather and city_name:
+        r = list(map(get_weather, city_name))
+        map_weather_tip = "\n".join(r)
+        return map_weather_tip
+    else:
+        print("和风天气配置缺失")
+
+    # 获取金山词霸数据
 
 
 def get_ciba():
@@ -200,15 +206,19 @@ def get_elemone(elem):
 # 获取日期计算结果
 
 
-def get_map_tip(func, days, names):
-    if days and names and len(days) == len(names):
-        r = list(map(func, days, names))
-        r.sort(key=get_elemone)
-        res = list(map(get_elemzero, r))
-        map_tip = "\n".join(res)
-        return map_tip
+def get_map_days(func, days, names):
+    if days or names:
+        if len(days) == len(names):
+            r = list(map(func, days, names))
+            r.sort(key=get_elemone)
+            res = list(map(get_elemzero, r))
+            map_days_tip = "\n".join(res)
+            return map_days_tip
+        else:
+            print("请检查日期数据有效性与数量")
+            return None
     else:
-        print("请检查日期数据有效性与数量")
+        print(func, "配置缺失")
         return None
 
 
@@ -219,27 +229,28 @@ def handle_message():
     info_content = []
     time_data = get_time()
     today_date = time_data["today_date"]
-    time_tip = time_data["time_tip"]
+    today_tip = time_data["today_tip"]
+    info_content.append(today_tip)
 
     bing_data = get_bing()
     bing_pic = None
     if bing_data:
         bing_pic = bing_data["bing_pic"]
         bing_content = bing_data["bing_content"]
-        info_content.append(bing_content)
+    weather_tip = get_map_weather(city_name_list)
+    if weather_tip:
+        info_content.append(weather_tip)
 
-    if qweather and city:
-        weather_data = get_weather()
-        if weather_data:
-            weather_info = weather_data["weather_info"]
-            info_content.append(weather_info)
-
-    remain_tip = get_map_tip(get_remain, target_day, target_name)
+    days_tip = []
+    remain_tip = get_map_days(get_remain, target_day_list, target_name_list)
     if remain_tip:
-        info_content.append(remain_tip)
-    begin_tip = get_map_tip(get_duration, begin_day, begin_name)
-    if begin_tip:
-        info_content.append(begin_tip)
+        days_tip.append(remain_tip)
+    duration_tip = get_map_days(get_duration, begin_day_list, begin_name_list)
+    if duration_tip:
+        days_tip.append(duration_tip)
+    if days_tip:
+        days_tip = "\n".join(days_tip)
+        info_content.append(days_tip)
 
     ciba_data = get_ciba()
     if ciba_data:
@@ -248,6 +259,7 @@ def handle_message():
 
     info_desp = "\n\n".join(info_content)
     info_detail = info_desp.replace("\n", "\\n")
+
     msg = {
         "touser": "@all",
         "toparty": "",
@@ -256,9 +268,9 @@ def handle_message():
         "agentid": agentid,
         "news": {
             "articles": [{
-                "title": today_date + "\n" + time_tip,
+                "title": today_date + "\n" + bing_content,
                 "description": info_desp,
-                "url": f"https://ii.vercel.app/show/?t={today_date}&p={bing_pic}&c={info_detail}",
+                "url": f"https://ii.vercel.app/show/?t={today_date}" + "\\n" + f"{bing_content}&p={bing_pic}&c={info_detail}",
                 "picurl": bing_pic
             }]
         },
@@ -299,11 +311,16 @@ def push(token, data):
 
 
 def main():
-    values = handle_message()
-    token = get_token(corpid, corpsecret)
-    if token is None:
+    if corpid and corpsecret and agentid:
+        values = handle_message()
+        token = get_token(corpid, corpsecret)
+        if token is None:
+            return
+        push(token, values)
         return
-    push(token, values)
+    else:
+        print("请完善企业微信机器人配置！")
+        return
 
 
 def main_handler(event, context):
