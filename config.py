@@ -8,10 +8,14 @@ SYS_CONFIG = {
     "qweather": "",
     # 天气预报地址
     "city": "",
-    # 目标日期
+    # 倒数日项目日期
     "targetday": "",
-    # 目标名称
-    "targetname": ""
+    # 倒数日项目名称
+    "targetname": "",
+    # 正数日项目日期
+    "beginday": "",
+    # 正数日项目名称
+    "beginname": ""
 }
 
 
