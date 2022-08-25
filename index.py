@@ -113,9 +113,9 @@ def get_weather_icon(text):
     weather_type = ["晴", "阴", "云", "雨", "雪", "雷", "沙", "雾", "风"]
     for index, item in enumerate(weather_type):
         if re.search(item, text):
-            icon = weather_icon_list[index]
+            weather_icon = weather_icon_list[index]
             break
-    return icon
+    return weather_icon
 
 # 获取金山词霸数据
 
@@ -136,25 +136,6 @@ def get_ciba():
         print("获取金山词霸数据出错:", e)
         return None
 
-# 获取一个图文数据
-
-
-def get_one():
-    try:
-        one_url = "https://apier.youngam.cn/essay/one"
-        r = requests.get(one_url).json()["dataList"][0]
-        one_id = r["id"]
-        one_pic = r["src"]
-        one_content = r["text"]
-        one_id = "VOL."+one_id
-        return {
-            "one_id": one_id,
-            "one_pic": one_pic,
-            "one_content": one_content
-        }
-    except Exception as e:
-        print("获取一个数据出错:", e)
-        return None
 
 # 计算倒数日
 
@@ -247,12 +228,6 @@ def handle_message():
         bing_content = bing_data["bing_content"]
         info_content.append(bing_content)
 
-    one_data = get_one()
-    if one_data:
-        one_id = one_data["one_id"]
-        one_pic = one_data["one_pic"]
-        one_content = one_data["one_content"]
-
     if qweather and city:
         weather_data = get_weather()
         if weather_data:
@@ -269,7 +244,6 @@ def handle_message():
     ciba_data = get_ciba()
     if ciba_data:
         ciba_content = ciba_data["ciba_content"]
-        ciba_pic = ciba_data["ciba_pic"]
         info_content.append(ciba_content)
 
     info_desp = "\n\n".join(info_content)
