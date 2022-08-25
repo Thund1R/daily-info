@@ -25,7 +25,7 @@ begin_name_list = list(filter(None, beginname))
 # 获取当前日期
 
 
-def get_time():
+def get_today():
     a = datetime.datetime.now()
     y = str(a.year)
     m = str(a.month)
@@ -117,12 +117,16 @@ def get_weather_icon(text):
 
 def get_map_weather(city_name):
     if qweather and city_name:
-        r = list(map(get_weather, city_name))
-        map_weather_tip = "\n".join(r)
-        return map_weather_tip
+        try:
+            r = list(map(get_weather, city_name))
+            map_weather_tip = "\n".join(r)
+            return map_weather_tip
+        except Exception as e:
+            print("和风天气运行出错：", e)
+            return None
     else:
         print("和风天气配置缺失")
-
+        return None
     # 获取金山词霸数据
 
 
@@ -227,9 +231,9 @@ def get_map_days(func, days, names):
 
 def handle_message():
     info_content = []
-    time_data = get_time()
-    today_date = time_data["today_date"]
-    today_tip = time_data["today_tip"]
+    today_data = get_today()
+    today_date = today_data["today_date"]
+    today_tip = today_data["today_tip"]
     info_content.append(today_tip)
 
     bing_data = get_bing()
@@ -237,6 +241,7 @@ def handle_message():
     if bing_data:
         bing_pic = bing_data["bing_pic"]
         bing_content = bing_data["bing_content"]
+
     weather_tip = get_map_weather(city_name_list)
     if weather_tip:
         info_content.append(weather_tip)
