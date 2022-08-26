@@ -1,3 +1,4 @@
+import os
 import requests
 import json
 import datetime
@@ -6,6 +7,7 @@ import config
 import random
 from zhdate import ZhDate
 
+os.environ['TZ'] = 'Asia/Shanghai'
 corpid = config.get("corpid")
 corpsecret = config.get("corpsecret")
 agentid = config.get("agentid")
@@ -174,7 +176,7 @@ def get_ciba():
         return None
 
 
-# 计算倒数日
+# 计算每年纪念日
 
 
 def get_remain(target_day, target_name):
@@ -217,14 +219,34 @@ def get_remain(target_day, target_name):
     return (remain_tip, remain_day)
 
 
-# 计算间隔天数
+# 计算某天间隔天数
 
 
-def get_duration(begin_time, begin_name):
-    a = datetime.datetime.now()
-    b = datetime.datetime.strptime(begin_time, "%Y-%m-%d")
-    duration_day = (a-b).days
-    duration_tip = f"🗓️ {begin_name}已经 {duration_day} 天"
+def get_duration(begin_day, begin_name):
+    today = datetime.date.today()
+    begin_day_year = begin_day.split("-")[0]
+    # 判断是否为农历日期
+    if begin_day_year[0] == "n":
+        lunar_year = int(begin_day_year[1:])
+        lunar_mouth = int(begin_day.split("-")[1])
+        lunar_day = int(begin_day.split("-")[2])
+        begin_date = ZhDate(lunar_year, lunar_mouth,
+                            lunar_day).to_datetime().date()
+    else:
+        solar_year = int(begin_day.split("-")[0])
+        solar_month = int(begin_day.split("-")[1])
+        solar_day = int(begin_day.split("-")[2])
+        begin_date = datetime.date(solar_year, solar_month, solar_day)
+    # 计算日期间距
+    if today == begin_date:
+        duration_day = 0
+        duration_tip = f"🌟 {begin_name}就是今天啦！"
+    elif today > begin_date:
+        duration_day = int(str(today.__sub__(begin_date)).split(" ")[0])
+        duration_tip = f"🗓️ {begin_name}已经 {duration_day} 天"
+    else:
+        duration_day = int(str(begin_date.__sub__(today)).split(" ")[0])
+        duration_tip = f"🗓️ 距离{begin_name}还有 {duration_day} 天"
     return (duration_tip, duration_day)
 
 
@@ -239,20 +261,37 @@ def get_elemone(elem):
 # 获取所有日期数据
 
 
-def get_map_days(func, days, names):
-    if days or names:
-        if len(days) == len(names):
-            r = list(map(func, days, names))
-            r.sort(key=get_elemone)
-            res = list(map(get_elemzero, r))
-            map_days_tip = "\n".join(res)
-            return map_days_tip
+def get_days_tip():
+    days_list = []
+    days_tip = ""
+    target_res = ""
+    if target_day_list or target_name_list:
+        if len(target_day_list) == len(target_name_list):
+            target_res = list(
+                map(get_remain, target_day_list, target_name_list))
+            days_list.extend(target_res)
         else:
-            print("请检查日期数据有效性与数量")
-            return None
+            print("请检查纪念日target相关参数数量和有效性")
     else:
-        print(func, "配置缺失")
-        return None
+        print("未配置纪念日")
+
+    begin_res = ""
+    if begin_day_list or begin_name_list:
+        if len(begin_day_list) == len(begin_name_list):
+            begin_res = list(
+                map(get_duration, begin_day_list, begin_name_list))
+            days_list.extend(begin_res)
+        else:
+            print("请检查单日begin相关参数数量和有效性")
+    else:
+        print("未配置单日")
+
+    days_list = list(filter(None, days_list))
+    if days_list:
+        days_list.sort(key=get_elemone)
+        res = list(map(get_elemzero, days_list))
+        days_tip = "\n".join(res)
+    return days_tip
 
 
 # 获取一个图文数据
@@ -318,15 +357,8 @@ def handle_message():
         extra_content.append(handle_extra(
             weather_tip, "Weather", weather_tip, None, None))
 
-    days_tip = []
-    remain_tip = get_map_days(get_remain, target_day_list, target_name_list)
-    if remain_tip:
-        days_tip.append(remain_tip)
-    duration_tip = get_map_days(get_duration, begin_day_list, begin_name_list)
-    if duration_tip:
-        days_tip.append(duration_tip)
+    days_tip = get_days_tip()
     if days_tip:
-        days_tip = "\n".join(days_tip)
         info_content.append(days_tip)
         extra_content.append(handle_extra(
             days_tip, "Days", days_tip, None, None))
