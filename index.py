@@ -307,7 +307,6 @@ def handle_message():
     bing_data = get_bing()
     if bing_data:
         bing_pic = bing_data["bing_pic"]
-        bing_content = bing_data["bing_content"]
         bing_title = bing_data["bing_title"]
         bing_tip = bing_data["bing_tip"]
         extra_content.append(handle_extra(today_date+"\n"+bing_title,
