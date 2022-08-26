@@ -10,6 +10,7 @@ corpid = config.get("corpid")
 corpsecret = config.get("corpsecret")
 agentid = config.get("agentid")
 qweather = config.get("qweather")
+msg_type = str(config.get("msgtype")) if config.get("msgtype") else "1"
 city = config.get("city").split("&&")
 city_name_list = list(filter(None, city))
 targetday = config.get("targetday").split("&&")
@@ -20,6 +21,19 @@ beginday = config.get("beginday").split("&&")
 beginname = config.get("beginname").split("&&")
 begin_day_list = list(filter(None, beginday))
 begin_name_list = list(filter(None, beginname))
+
+
+# 获取随机图片
+
+
+def get_pic():
+    try:
+        pic_url = "https://api.btstu.cn/sjbz/api.php?format=json&lx=fengjing"
+        r = requests.get(pic_url).json()
+        return r["imgurl"]
+    except Exception as e:
+        print("获取随机图片数据出错:", e)
+        return None
 
 
 # 获取当前日期
@@ -69,14 +83,17 @@ def get_bing():
         bing_pic = "https://cn.bing.com/"+res["images"][0]["url"]
         bing_title = res["images"][0]["title"]
         bing_content = re.sub(u"\\(.*?\\)", "", res["images"][0]["copyright"])
-        bing_content = bing_title+"——"+bing_content
+        bing_tip = bing_title+"——"+bing_content
         return {
             "bing_pic": bing_pic,
-            "bing_content": bing_content
+            "bing_title": bing_title,
+            "bing_content": bing_content,
+            "bing_tip": bing_tip
         }
     except Exception as e:
         print("获取必应数据出错:", e)
         return None
+
 
 # 获取和风天气数据
 
@@ -104,6 +121,9 @@ def get_weather(city_name):
         return None
 
 
+# 获取天气icon
+
+
 def get_weather_icon(text):
     weather_icon = "🌈"
     weather_icon_list = ["☀️", "⛅️", "☁️", "🌧️", "☃️", "🌩️", "🏜️", "🌫️", "🌪️"]
@@ -113,6 +133,9 @@ def get_weather_icon(text):
             weather_icon = weather_icon_list[index]
             break
     return weather_icon
+
+
+# 获取所有天气数据
 
 
 def get_map_weather(city_name):
@@ -127,20 +150,24 @@ def get_map_weather(city_name):
     else:
         print("和风天气配置缺失")
         return None
-    # 获取金山词霸数据
+
+
+# 获取金山词霸数据
 
 
 def get_ciba():
     try:
         ciba_url = "http://open.iciba.com/dsapi/"
         r = requests.get(ciba_url).json()
-        ciba_content = r["content"]
+        ciba_en = r["content"]
+        ciba_zh = r["note"]
         ciba_pic = r["fenxiang_img"]
-        ciba_note = r["note"]
-        ciba_content = "🔤 "+ciba_content+"\n"+"🀄️ "+ciba_note
+        ciba_tip = "🔤 "+ciba_en+"\n"+"🀄️ "+ciba_zh
         return {
-            "ciba_content": ciba_content,
-            "ciba_pic": ciba_pic,
+            "ciba_zh": ciba_zh,
+            "ciba_en": ciba_en,
+            "ciba_tip": ciba_tip,
+            "ciba_pic": ciba_pic
         }
     except Exception as e:
         print("获取金山词霸数据出错:", e)
@@ -189,6 +216,7 @@ def get_remain(target_day, target_name):
         remain_tip = f"🗓️ 距离{target_name}还有 {remain_day} 天"
     return (remain_tip, remain_day)
 
+
 # 计算间隔天数
 
 
@@ -207,7 +235,8 @@ def get_elemzero(elem):
 def get_elemone(elem):
     return elem[1]
 
-# 获取日期计算结果
+
+# 获取所有日期数据
 
 
 def get_map_days(func, days, names):
@@ -226,11 +255,48 @@ def get_map_days(func, days, names):
         return None
 
 
+# 获取一个图文数据
+
+
+def get_one():
+    try:
+        one_url = "https://apier.youngam.cn/essay/one"
+        r = requests.get(one_url).json()['dataList'][0]
+        one_id = "VOL."+r['id']
+        one_pic = r['src']
+        one_tip = f"✒️ {one_id} {r['text']}"
+        return {
+            "one_pic": one_pic,
+            "one_tip": one_tip
+        }
+    except Exception as e:
+        print("获取ONE一个图文数据出错:", e)
+        return None
+
+# 处理多图文内容增加
+
+
+def handle_extra(out_title, inner_title, content, pic, link):
+    if msg_type == "2":
+        picurl = pic if pic else get_pic()
+        inner_title = inner_title.replace("\n", "\\n")
+        content = content.replace("\n", "\\n")
+        url = link if link else f"https://ii.vercel.app/show/?t={inner_title}&p={picurl}&c={content}"
+        return {
+            "title": out_title,
+            "url": url,
+            "picurl": picurl
+        }
+    else:
+        return None
+
+
 # 处理信息
 
 
 def handle_message():
     info_content = []
+    extra_content = []
     today_data = get_today()
     today_date = today_data["today_date"]
     today_tip = today_data["today_tip"]
@@ -242,10 +308,16 @@ def handle_message():
     if bing_data:
         bing_pic = bing_data["bing_pic"]
         bing_content = bing_data["bing_content"]
+        bing_title = bing_data["bing_title"]
+        bing_tip = bing_data["bing_tip"]
+        extra_content.append(handle_extra(today_date+"\n"+bing_title,
+                                          today_date, bing_tip, bing_pic, None))
 
     weather_tip = get_map_weather(city_name_list)
     if weather_tip:
         info_content.append(weather_tip)
+        extra_content.append(handle_extra(
+            weather_tip, "Weather", weather_tip, None, None))
 
     days_tip = []
     remain_tip = get_map_days(get_remain, target_day_list, target_name_list)
@@ -257,15 +329,37 @@ def handle_message():
     if days_tip:
         days_tip = "\n".join(days_tip)
         info_content.append(days_tip)
+        extra_content.append(handle_extra(
+            days_tip, "Days", days_tip, None, None))
 
     ciba_data = get_ciba()
     if ciba_data:
-        ciba_content = ciba_data["ciba_content"]
-        info_content.append(ciba_content)
+        ciba_tip = ciba_data["ciba_tip"]
+        ciba_pic = ciba_data["ciba_pic"]
+        info_content.append(ciba_tip)
+        extra_content.append(handle_extra(
+            ciba_tip, "iCiba", ciba_tip, ciba_pic, None))
+
+    one_data = get_one()
+    if one_data:
+        one_tip = one_data["one_tip"]
+        one_pic = one_data["one_pic"]
+        info_content.append(one_tip)
+        extra_content.append(handle_extra(
+            one_tip, "ONE·一个", one_tip, one_pic, None))
 
     info_desp = "\n\n".join(info_content)
     info_detail = info_desp.replace("\n", "\\n")
 
+    article = [{
+        "title": today_date + "\n" + bing_title,
+        "description": info_desp,
+        "url": f"https://ii.vercel.app/show/?t={today_date}&p={bing_pic}&c={bing_tip}\\n\\n{info_detail}",
+        "picurl": bing_pic
+    }]
+
+    if msg_type == "2":
+        article = list(filter(None, extra_content))
     msg = {
         "touser": "@all",
         "toparty": "",
@@ -273,18 +367,14 @@ def handle_message():
         "msgtype": "news",
         "agentid": agentid,
         "news": {
-            "articles": [{
-                "title": today_date + "\n" + bing_content,
-                "description": info_desp,
-                "url": f"https://ii.vercel.app/show/?t={today_date}&p={bing_pic}&c={bing_content}\\n\\n{info_detail}",
-                "picurl": bing_pic
-            }]
+            "articles": article
         },
         "enable_id_trans": 0,
         "enable_duplicate_check": 0,
         "duplicate_check_interval": 1800
     }
     return msg
+
 
 # 获取调用接口凭证
 
@@ -301,6 +391,7 @@ def get_token(corpid, corpsecret):
     else:
         print("企业微信access_token获取失败: " + str(res))
         return None
+
 
 # 推送信息
 
