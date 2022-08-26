@@ -39,7 +39,7 @@ def get_today():
         today_tip = "早上好~"
     if "06:00:00" <= now_time < "09:00:00":
         today_tip = "早上好"
-    elif "9:00:00" <= now_time < "12:00:00":
+    elif "09:00:00" <= now_time < "12:00:00":
         today_tip = "上午好"
     elif "12:00:00" <= now_time < "13:00:00":
         today_tip = "中午好"
@@ -54,7 +54,7 @@ def get_today():
 
 
 def get_emoticon():
-    emoticon_list = ["(￣▽￣)~*", "(～￣▽￣)～ ", "︿(￣︶￣)︿", "[]~(￣▽￣)~*", "(oﾟ▽ﾟ)o  ", "ヾ(✿ﾟ▽ﾟ)ノ", "٩(๑❛ᴗ❛๑)۶", "ヾ(◍°∇°◍)ﾉﾞ", "ヾ(๑╹◡╹)ﾉ",  "(๑´ㅂ`๑) ", "(*´ﾟ∀ﾟ｀)ﾉ ", "ヽ(ﾟ∀ﾟ)ﾒ(ﾟ∀ﾟ)ﾉ ", "(´▽`)ﾉ ", "ヾ(●´∀｀●) ",
+    emoticon_list = ["(￣▽￣)~*", "(～￣▽￣)～ ", "︿(￣︶￣)︿", "[]~(￣▽￣)~*", "(oﾟ▽ﾟ)o  ", "ヾ(✿ﾟ▽ﾟ)ノ", "٩(๑❛ᴗ❛๑)۶", "ヾ(◍°∇°◍)ﾉﾞ", "ヾ(๑╹◡╹)ﾉ",  "(๑´ㅂ`๑) ", "(*´ﾟ∀ﾟ｀)ﾉ ",  "(´▽`)ﾉ ", "ヾ(●´∀｀●) ",
                      "(｡◕ˇ∀ˇ◕)", "(≖ᴗ≖)✧", "(◕ᴗ◕✿)", "(❁´◡`❁)*✲ﾟ*", "(๑¯∀¯๑)", "(*´・ｖ・)", "(づ｡◕ᴗᴗ◕｡)づ", "o(*￣▽￣*)o ", "(｀・ω・´)", "( • ̀ω•́ )✧", "ヾ(=･ω･=)o", "(￣３￣)a ", "(灬°ω°灬) ", "ヾ(•ω•`。)", "｡◕ᴗ◕｡"]
     return random.choice(emoticon_list)
 
@@ -236,8 +236,9 @@ def handle_message():
     today_tip = today_data["today_tip"]
     info_content.append(today_tip)
 
+    bing_pic = ""
+    bing_content = ""
     bing_data = get_bing()
-    bing_pic = None
     if bing_data:
         bing_pic = bing_data["bing_pic"]
         bing_content = bing_data["bing_content"]
@@ -275,7 +276,7 @@ def handle_message():
             "articles": [{
                 "title": today_date + "\n" + bing_content,
                 "description": info_desp,
-                "url": f"https://ii.vercel.app/show/?t={today_date}" + "\\n" + f"{bing_content}&p={bing_pic}&c={info_detail}",
+                "url": f"https://ii.vercel.app/show/?t={today_date}&p={bing_pic}&c={bing_content}\\n\\n{info_detail}",
                 "picurl": bing_pic
             }]
         },
@@ -324,7 +325,7 @@ def main():
         push(token, values)
         return
     else:
-        print("请完善企业微信机器人配置！")
+        print("企业微信机器人配置缺失")
         return
 
 
