@@ -303,7 +303,7 @@ def handle_message():
     info_content.append(today_tip)
 
     bing_pic = ""
-    bing_content = ""
+    bing_tip = ""
     bing_data = get_bing()
     if bing_data:
         bing_pic = bing_data["bing_pic"]

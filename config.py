@@ -15,7 +15,7 @@ SYS_CONFIG = {
     # 正数日项目日期
     "beginday": "",
     # 正数日项目名称
-    "beginname": ""
+    "beginname": "",
     # 图文类型，1为单图文，2为多图文
     "msgtype": ""
 }
