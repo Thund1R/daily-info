@@ -54,7 +54,7 @@ git clone https://gitee.com/thund1r/daily-info.git
 mv daily-info src
 cd src
 pip3 install zhdate requests -t .
-
+ 
 ```
 
 所有命令执行完毕后，点击**部署**，部署成功后点击**测试**，查看日志输出以及微信消息
@@ -68,7 +68,7 @@ pip3 install zhdate requests -t .
 ```shell
 cd src
 git pull
-
+ 
 ```
 
 更新完后再次部署和测试即可
