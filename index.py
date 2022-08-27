@@ -52,7 +52,7 @@ def get_today():
     now_time = a.strftime("%H:%M:%S")
     today_tip = "你好"
     if "00:00:00" <= now_time < "06:00:00":
-        today_tip = "早上好~"
+        today_tip = "凌晨好~"
     if "06:00:00" <= now_time < "09:00:00":
         today_tip = "早上好"
     elif "09:00:00" <= now_time < "12:00:00":
@@ -127,12 +127,14 @@ def get_weather(city_name):
                 weather_icon = get_weather_icon(textDay)
                 weather_tip = f"{weather_icon} {county}{textDay}，{tempMin} ~ {tempMax} ℃"
                 weather_list.append(weather_tip)
+            # 获取穿衣指数
             life_url = f"https://devapi.qweather.com/v7/indices/1d?type=3&location={city_id}&key={qweather}"
             life_json = requests.get(life_url).json()
             life_code = life_json["code"]
             if life_code.__eq__("200"):
                 life_tip = "👔 "+life_json["daily"][0]["text"]
                 weather_list.append(life_tip)
+            
             weather_info = '\n'.join(weather_list)
         else:
             print(f"获取{city_name}ID失败")
@@ -147,8 +149,9 @@ def get_weather(city_name):
 
 def get_weather_icon(text):
     weather_icon = "🌈"
-    weather_icon_list = ["☀️",  "☁️", "⛅️", "🌧️", "☃️", "⛈️", "🏜️","🏜️", "🌫️","🌫️", "🌪️"]
-    weather_type = ["晴", "阴", "云", "雨", "雪", "雷", "沙", "尘","雾", "霾", "风"]
+    weather_icon_list = ["☀️",  "☁️", "⛅️", "🌧️",
+                         "☃️", "⛈️", "🏜️", "🏜️", "🌫️", "🌫️", "🌪️"]
+    weather_type = ["晴", "阴", "云", "雨", "雪", "雷", "沙", "尘", "雾", "霾", "风"]
     for index, item in enumerate(weather_type):
         if re.search(item, text):
             weather_icon = weather_icon_list[index]
@@ -184,8 +187,6 @@ def get_ciba():
         ciba_pic = r["fenxiang_img"]
         ciba_tip = "🔤 "+ciba_en+"\n"+"🀄️ "+ciba_zh
         return {
-            "ciba_zh": ciba_zh,
-            "ciba_en": ciba_en,
             "ciba_tip": ciba_tip,
             "ciba_pic": ciba_pic
         }
@@ -201,26 +202,20 @@ def get_remain(target_day, target_name):
     today = datetime.date.today()
     this_year = datetime.datetime.now().year
     target_day_year = target_day.split("-")[0]
-    # 判断是否为农历日期
     if target_day_year[0] == "n":
         lunar_mouth = int(target_day.split("-")[1])
         lunar_day = int(target_day.split("-")[2])
-        # 今年日期
         this_date = ZhDate(this_year, lunar_mouth,
                            lunar_day).to_datetime().date()
     else:
-        # 获取国历日期的今年对应月和日
         solar_month = int(target_day.split("-")[1])
         solar_day = int(target_day.split("-")[2])
-        # 今年日期
         this_date = datetime.date(this_year, solar_month, solar_day)
-    # 计算日期年份，如果还没过，按当年减，如果过了需要+1
     if today == this_date:
         remain_day = 0
         remain_tip = f"🌟 {target_name}就是今天啦！"
     elif today > this_date:
         if target_day_year[0] == "n":
-            # 获取农历明年日期的月和日
             lunar_next_date = ZhDate(
                 (this_year + 1), lunar_mouth, lunar_day).to_datetime().date()
             next_date = datetime.date(
@@ -243,7 +238,6 @@ def get_remain(target_day, target_name):
 def get_duration(begin_day, begin_name):
     today = datetime.date.today()
     begin_day_year = begin_day.split("-")[0]
-    # 判断是否为农历日期
     if begin_day_year[0] == "n":
         lunar_year = int(begin_day_year[1:])
         lunar_mouth = int(begin_day.split("-")[1])
@@ -255,7 +249,6 @@ def get_duration(begin_day, begin_name):
         solar_month = int(begin_day.split("-")[1])
         solar_day = int(begin_day.split("-")[2])
         begin_date = datetime.date(solar_year, solar_month, solar_day)
-    # 计算日期间距
     if today == begin_date:
         duration_day = 0
         duration_tip = f"🌟 {begin_name}就是今天啦！"
