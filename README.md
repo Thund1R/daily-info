@@ -40,11 +40,11 @@
 
 超长完整版：[酷安图文](https://www.coolapk.com/feed/38775487?shareKey=YTYyZmUyYjMxMGIxNjMwYTRkYTc~)
 
-精简版：[部署步骤](./docs/deployment)
+精简版：[部署步骤](./docs/deployment.md)
 
 ## Update
 
-[更新日志](./docs/update)
+[更新日志](./docs/update.md)
 
 ## Notice
 
