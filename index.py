@@ -70,8 +70,8 @@ def get_today():
 
 
 def get_emoticon():
-    emoticon_list = ["(￣▽￣)~*", "(～￣▽￣)～ ", "︿(￣︶￣)︿", "[]~(￣▽￣)~*", "(oﾟ▽ﾟ)o  ", "ヾ(✿ﾟ▽ﾟ)ノ", "٩(๑❛ᴗ❛๑)۶", "ヾ(◍°∇°◍)ﾉﾞ", "ヾ(๑╹◡╹)ﾉ",  "(๑´ㅂ`๑) ", "(*´ﾟ∀ﾟ｀)ﾉ ",  "(´▽`)ﾉ ", "ヾ(●´∀｀●) ",
-                     "(｡◕ˇ∀ˇ◕)", "(≖ᴗ≖)✧", "(◕ᴗ◕✿)", "(❁´◡`❁)*✲ﾟ*", "(๑¯∀¯๑)", "(*´・ｖ・)", "(づ｡◕ᴗᴗ◕｡)づ", "o(*￣▽￣*)o ", "(｀・ω・´)", "( • ̀ω•́ )✧", "ヾ(=･ω･=)o", "(￣３￣)a ", "(灬°ω°灬) ", "ヾ(•ω•`。)", "｡◕ᴗ◕｡"]
+    emoticon_list = ["(￣▽￣)~*", "(～￣▽￣)～", "︿(￣︶￣)︿", "~(￣▽￣)~*", "(oﾟ▽ﾟ)o", "ヾ(✿ﾟ▽ﾟ)ノ", "٩(๑❛ᴗ❛๑)۶", "ヾ(◍°∇°◍)ﾉﾞ", "ヾ(๑╹◡╹)ﾉ", "(๑´ㅂ`๑)", "(*´ﾟ∀ﾟ｀)ﾉ", "(´▽`)ﾉ", "ヾ(●´∀｀●)",
+                     "(｡◕ˇ∀ˇ◕)", "(≖ᴗ≖)✧", "(◕ᴗ◕✿)", "(❁´◡`❁)*✲ﾟ*", "(๑¯∀¯๑)", "(*´・ｖ・)", "(づ｡◕ᴗᴗ◕｡)づ", "o(*￣▽￣*)o", "(｀・ω・´)", "( • ̀ω•́ )✧", "ヾ(=･ω･=)o", "(￣３￣)a", "(灬°ω°灬)", "ヾ(•ω•`。)", "｡◕ᴗ◕｡"]
     return random.choice(emoticon_list)
 
 
@@ -102,24 +102,43 @@ def get_bing():
 
 def get_weather(city_name):
     try:
-        city_url = f"https://geoapi.qweather.com/v2/city/lookup?key={qweather}&location={city_name}"
+        city_id = None
+        weather_list = []
+        weather_info = None
+        city = city_name.split("-")[0]
+        county = city_name.split("-")[1]
+        city_url = f"https://geoapi.qweather.com/v2/city/lookup?key={qweather}&location={city}"
         city_json = requests.get(city_url).json()
-        city_id = city_json["location"][0]["id"]
-        weather_url = f"https://devapi.qweather.com/v7/weather/3d?key={qweather}&location={city_id}"
-        weather_json = requests.get(weather_url).json()
-        temp = weather_json["daily"][0]
-        textDay = temp["textDay"]
-        tempMin = temp["tempMin"]
-        tempMax = temp["tempMax"]
-        weather_icon = get_weather_icon(textDay)
-        life_url = f"https://devapi.qweather.com/v7/indices/1d?type=3&location={city_id}&key={qweather}"
-        life_json = requests.get(life_url).json()
-        life_tip = "👔 "+life_json["daily"][0]["text"]
-        weather_info = f"{weather_icon} {city_name}{textDay}，{tempMin} ~ {tempMax} ℃" + \
-            "\n" + life_tip
+        city_code = city_json["code"]
+        if city_code.__eq__("200"):
+            for city_data in city_json["location"]:
+                county_name = city_data["name"]
+                if county_name.__eq__(county):
+                    city_id = city_data["id"]
+        if city_id:
+            weather_url = f"https://devapi.qweather.com/v7/weather/3d?key={qweather}&location={city_id}"
+            weather_json = requests.get(weather_url).json()
+            weather_code = weather_json["code"]
+            if weather_code.__eq__("200"):
+                temp = weather_json["daily"][0]
+                textDay = temp["textDay"]
+                tempMin = temp["tempMin"]
+                tempMax = temp["tempMax"]
+                weather_icon = get_weather_icon(textDay)
+                weather_tip = f"{weather_icon} {county}{textDay}，{tempMin} ~ {tempMax} ℃"
+                weather_list.append(weather_tip)
+            life_url = f"https://devapi.qweather.com/v7/indices/1d?type=3&location={city_id}&key={qweather}"
+            life_json = requests.get(life_url).json()
+            life_code = life_json["code"]
+            if life_code.__eq__("200"):
+                life_tip = "👔 "+life_json["daily"][0]["text"]
+                weather_list.append(life_tip)
+            weather_info = '\n'.join(weather_list)
+        else:
+            print(f"获取{city_name}ID失败")
         return weather_info
     except Exception as e:
-        print("获取和风天气数据出错:", e)
+        print(f"获取{city_name}和风天气数据出错:", e)
         return None
 
 
@@ -128,8 +147,8 @@ def get_weather(city_name):
 
 def get_weather_icon(text):
     weather_icon = "🌈"
-    weather_icon_list = ["☀️", "⛅️", "☁️", "🌧️", "☃️", "🌩️", "🏜️", "🌫️", "🌪️"]
-    weather_type = ["晴", "阴", "云", "雨", "雪", "雷", "沙", "雾", "风"]
+    weather_icon_list = ["☀️",  "☁️", "⛅️", "🌧️", "☃️", "⛈️", "🏜️","🏜️", "🌫️","🌫️", "🌪️"]
+    weather_type = ["晴", "阴", "云", "雨", "雪", "雷", "沙", "尘","雾", "霾", "风"]
     for index, item in enumerate(weather_type):
         if re.search(item, text):
             weather_icon = weather_icon_list[index]
@@ -142,13 +161,12 @@ def get_weather_icon(text):
 
 def get_map_weather(city_name):
     if qweather and city_name:
-        try:
-            r = list(map(get_weather, city_name))
-            map_weather_tip = "\n".join(r)
-            return map_weather_tip
-        except Exception as e:
-            print("和风天气运行出错：", e)
-            return None
+        map_weather_tip = None
+        weather_list = list(map(get_weather, city_name))
+        weather_list = list(filter(None, weather_list))
+        if weather_list:
+            map_weather_tip = "\n".join(weather_list)
+        return map_weather_tip
     else:
         print("和风天气配置缺失")
         return None
@@ -334,12 +352,12 @@ def handle_extra(out_title, inner_title, content, pic, link):
 
 
 def handle_message():
-    info_content = []
+    info_list = []
     extra_content = []
     today_data = get_today()
     today_date = today_data["today_date"]
     today_tip = today_data["today_tip"]
-    info_content.append(today_tip)
+    info_list.append(today_tip)
 
     bing_pic = ""
     bing_tip = ""
@@ -353,13 +371,13 @@ def handle_message():
 
     weather_tip = get_map_weather(city_name_list)
     if weather_tip:
-        info_content.append(weather_tip)
+        info_list.append(weather_tip)
         extra_content.append(handle_extra(
             weather_tip, "Weather", weather_tip, None, None))
 
     days_tip = get_days_tip()
     if days_tip:
-        info_content.append(days_tip)
+        info_list.append(days_tip)
         extra_content.append(handle_extra(
             days_tip, "Days", days_tip, None, None))
 
@@ -367,7 +385,7 @@ def handle_message():
     if ciba_data:
         ciba_tip = ciba_data["ciba_tip"]
         ciba_pic = ciba_data["ciba_pic"]
-        info_content.append(ciba_tip)
+        info_list.append(ciba_tip)
         extra_content.append(handle_extra(
             ciba_tip, "iCiba", ciba_tip, ciba_pic, None))
 
@@ -375,12 +393,14 @@ def handle_message():
     if one_data:
         one_tip = one_data["one_tip"]
         one_pic = one_data["one_pic"]
-        info_content.append(one_tip)
+        info_list.append(one_tip)
         extra_content.append(handle_extra(
             one_tip, "ONE·一个", one_tip, one_pic, None))
 
-    info_desp = "\n\n".join(info_content)
-    info_detail = info_desp.replace("\n", "\\n")
+    info_content = "\n\n".join(info_list)
+    info_detail = info_content.replace("\n", "\\n")
+    info_desp = info_content[:230] + \
+        '......' if len(info_content) > 230 else info_content
 
     article = [{
         "title": today_date + "\n" + bing_title,
