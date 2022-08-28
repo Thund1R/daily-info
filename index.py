@@ -53,7 +53,7 @@ def get_today():
     today_tip = "你好"
     if "00:00:00" <= now_time < "06:00:00":
         today_tip = "凌晨好~"
-    if "06:00:00" <= now_time < "09:00:00":
+    elif "06:00:00" <= now_time < "09:00:00":
         today_tip = "早上好"
     elif "09:00:00" <= now_time < "12:00:00":
         today_tip = "上午好"
