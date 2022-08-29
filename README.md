@@ -1,9 +1,12 @@
 <h1 align="center">DailyInfo</h1>
 <h6 align="center">基于企业微信的每日图文推送</h6>
 
+**❗︎重大更新，图文详情页回归，请先[更新](https://kdocs.cn/l/csn6eqw93kQZ?linkname=smWY0eb8y2)后进行[页面配置](
+https://kdocs.cn/l/csn6eqw93kQZ?linkname=DE0uPt3Xwk)**
+
 **❗︎[点此前往完整版部署教程](https://www.kdocs.cn/l/csn6eqw93kQZ)**
 
-**❗︎目前只支持云服务器或腾讯云函数部署**
+**❗︎目前只支持云服务器或腾讯云函数等IP固定的平台部署**
 
 ## Introduction
 
@@ -13,17 +16,19 @@
 - 和风天气 多地区天气预报
 - 农历 / 公历多日期纪念日 / 单日提醒
 - 可选的单图文 / 多图文推送模式
-- ~~自带图文展示页~~（等官方修复）
+- 自带图文展示页
 
 ## Preview
 
 - 单图文
 
-<div align=center><img src="docs/单图文.jpg" width="200"/>  <img src="docs/单图文详情.jpg" width="200"/></div>
+<img src="https://b2.kuibu.net/file/imgdisk/2022/08/30/WPS1.png"  />
 
 - 多图文
 
-<div align=center><img src="docs/多图文.jpg" width="200"/>  <img src="docs/多图文详情.jpg" width="200"/></div>
+![](https://b2.kuibu.net/file/imgdisk/2022/08/30/WPS2.png)
+
+![](https://b2.kuibu.net/file/imgdisk/2022/08/30/WPS3.png)
 
 ## Preparation
 
@@ -39,22 +44,23 @@
 | targetname | 纪念日名称<br />每年都有的日子，多日期以&&分隔<br />如：某某某的生日&&结婚纪念日 | 非必填 |
 | targetday  | 纪念日日期，公历格式20XX-XX-XX<br />农历年份前加n，多日期以&&分隔，注意与名称对应<br />如：n2020-08-11&&2021-08-26 | 非必填 |
 |  msgtype   |        图文类型，默认单图文<br />1为单图文，2为多图文        | 非必填 |
+|    link    |                        图文详情页网址                        | 非必填 |
 
 ## Deployment
 
-**部署教程完整版**：[**金山文档**](https://www.kdocs.cn/l/csn6eqw93kQZ)        [酷安图文](https://www.coolapk.com/feed/38775487?shareKey=YTYyZmUyYjMxMGIxNjMwYTRkYTc~)
+部署教程完整版：[金山文档](https://www.kdocs.cn/l/csn6eqw93kQZ) (实时更新)       [酷安图文](https://www.coolapk.com/feed/38775487?shareKey=YTYyZmUyYjMxMGIxNjMwYTRkYTc~)
 
 部署教程精简版：[部署步骤](./docs/deployment.md)
 
 ## Update
 
-[更新日志](./docs/update.md)
+[更新日志](https://kdocs.cn/l/csn6eqw93kQZ?linkname=PxK8H8tFA1)
 
 ## Notice
 
-- 提供**方法函数模板**[template.py](./template.py)用于大家自行拓展，玩得开心~
+- **图文展示页**回归，采用自己搭建的方式，更加安全放心。
 
-- 受vercel.app被ban的限制，**图文展示页**暂不可用，等待官方修复。
+- 提供**方法函数模板**[template.py](./template.py)用于大家自行拓展，玩得开心~
 
 - 受企业微信的限制，2022年6月20日后新建应用必须配置企业可信IP，在此之前创建的应用不受此限制。建议使用**云服务器或腾讯云函数**等IP固定的方式，阿里云、华为云函数暂时均无此功能，可能无法正常运行本项目。
 
@@ -68,7 +74,18 @@
 
 - **和风天气预报** 会根据天气文本信息自动更换对应的天气emoji图标。
 
-- **图文展示页** 来自我的项目 **Diary** —— 基于 Python Fastapi 部署于 Vercel 的简易图文展示，通过URL传递参数实现，不存储任何数据
+- **图文展示页** 来自我的项目 **Diary** —— 基于 Python Fastapi 的简易图文展示，通过URL传递参数实现，不存储任何数据。开源地址：Github：https://github.com/Thund1R/diary     Gitee：https://gitee.com/thund1r/diary
 
-  开源地址：Github：https://github.com/Thund1R/diary     Gitee：https://gitee.com/thund1r/diary
+
+## Thanks
+
+这是我第一个被这么多人使用的项目，还是有点子激动的。
+
+不足之处，大家多多包涵，有什么问题可以进群交流反馈。
+
+欢迎Star、Fork、PR，也欢迎打赏，再次感谢。
+
+![](https://b2.kuibu.net/file/imgdisk/2022/08/30/WPS.png)
+
+
 

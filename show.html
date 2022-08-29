@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon"
+        href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/svgs/regular/calendar-check.svg">
+    <title>Diary</title>
+</head>
+
+<body>
+    <section>
+        <div class="container">
+            <div class="pic">
+                <img src='<&p&>'>
+                </img>
+            </div>
+            <h2 class="title">
+                <&t&>
+            </h2>
+            <h3 class="content">
+                <&c&>
+            </h3>
+        </div>
+        <div id="footer">-DailyInfo-</div>
+    </section>
+</body>
+<style>
+    /* 下面这三行切勿有任何变动 */
+    .pic{display:none}
+    .title{display:none}
+    .content{display:none}
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .container {
+        width: 50%;
+        padding-bottom: 60px;
+    }
+
+    @media screen and (max-width: 1200px) {
+        .container {
+            width: 90%;
+        }
+    }
+
+    body {
+        background: linear-gradient(to bottom right, #0184cf, #77A1D3, #a0eacf);
+    }
+
+
+    .pic {
+        margin: 16px 0;
+        padding: 12px;
+        background-color: white;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 0;
+    }
+
+    .title {
+        margin: 16px 0 6px;
+        color: #fff;
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .content {
+        color: white;
+    }
+
+    section {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    #footer {
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+        line-height: 60px;
+        color: white;
+        font-weight: bold;
+        width: 100%;
+        height: 60px;
+        clear: both;
+    }
+</style>
+
+</html>

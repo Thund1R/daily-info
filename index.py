@@ -1,17 +1,18 @@
 import os
 import requests
 import json
-import datetime
+from datetime import datetime, date, timedelta
 import re
 import config
 import random
 from zhdate import ZhDate
 
-os.environ['TZ'] = 'Asia/Shanghai'
+nowdatetime = (datetime.utcnow() + timedelta(hours=8))
 corpid = config.get("corpid")
 corpsecret = config.get("corpsecret")
 agentid = config.get("agentid")
 qweather = config.get("qweather")
+link = config.get("link")
 msg_type = str(config.get("msgtype")) if config.get("msgtype") else "1"
 city = config.get("city").split("&&")
 city_name_list = list(filter(None, city))
@@ -42,14 +43,12 @@ def get_pic():
 
 
 def get_today():
-    a = datetime.datetime.now()
-    y = str(a.year)
-    m = str(a.month)
-    d = str(a.day)
-    w = int(a.strftime("%w"))
+    ndt = nowdatetime
+    d = ndt.strftime("%Y{y}%m{m}%d{d}").format(y='年', m='月', d='日')
+    w = int(ndt.strftime("%w"))
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
-    today_date = y + "年" + m + "月" + d + "日  " + week_list[w]
-    now_time = a.strftime("%H:%M:%S")
+    today_date = d + " " + week_list[w]
+    now_time = ndt.strftime("%H:%M:%S")
     today_tip = "你好"
     if "00:00:00" <= now_time < "06:00:00":
         today_tip = "凌晨好~"
@@ -107,7 +106,7 @@ def get_weather(city_name):
         weather_info = None
         city = city_name.split("-")[0]
         county = city_name.split("-")[1]
-        city_url = f"https://geoapi.qweather.com/v2/city/lookup?key={qweather}&location={city}"
+        city_url = f"https://geoapi.qweather.com/v2/city/lookup?&number=20&key={qweather}&location={city}"
         city_json = requests.get(city_url).json()
         city_code = city_json["code"]
         if city_code.__eq__("200"):
@@ -115,6 +114,9 @@ def get_weather(city_name):
                 county_name = city_data["name"]
                 if county_name.__eq__(county):
                     city_id = city_data["id"]
+        else:
+            print(
+                f"没有找到{city}这个地方，请检查city值是否正确，格式是否为 市-市/区/县 ，例如 成都-双流 ，不要有市区县等后缀")
         if city_id:
             weather_url = f"https://devapi.qweather.com/v7/weather/3d?key={qweather}&location={city_id}"
             weather_json = requests.get(weather_url).json()
@@ -134,10 +136,11 @@ def get_weather(city_name):
             if life_code.__eq__("200"):
                 life_tip = "👔 "+life_json["daily"][0]["text"]
                 weather_list.append(life_tip)
-            
+
             weather_info = '\n'.join(weather_list)
         else:
-            print(f"获取{city_name}ID失败")
+            print(
+                f"获取{city_name}ID失败，请检查city值是否正确，格式是否为 市-市/区/县 ，例如 成都-双流 ，不要有市区县等后缀")
         return weather_info
     except Exception as e:
         print(f"获取{city_name}和风天气数据出错:", e)
@@ -149,9 +152,9 @@ def get_weather(city_name):
 
 def get_weather_icon(text):
     weather_icon = "🌈"
-    weather_icon_list = ["☀️",  "☁️", "⛅️", "🌧️",
-                         "☃️", "⛈️", "🏜️", "🏜️", "🌫️", "🌫️", "🌪️"]
-    weather_type = ["晴", "阴", "云", "雨", "雪", "雷", "沙", "尘", "雾", "霾", "风"]
+    weather_icon_list = ["☀️",  "☁️", "⛅️",
+                         "☃️", "⛈️", "🏜️", "🏜️", "🌫️", "🌫️", "🌪️", "🌧️"]
+    weather_type = ["晴", "阴", "云", "雪", "雷", "沙", "尘", "雾", "霾", "风", "雨"]
     for index, item in enumerate(weather_type):
         if re.search(item, text):
             weather_icon = weather_icon_list[index]
@@ -199,8 +202,9 @@ def get_ciba():
 
 
 def get_remain(target_day, target_name):
-    today = datetime.date.today()
-    this_year = datetime.datetime.now().year
+    ndt = nowdatetime
+    today = date(ndt.year, ndt.month, ndt.day)
+    this_year = datetime.now().year
     target_day_year = target_day.split("-")[0]
     if target_day_year[0] == "n":
         lunar_mouth = int(target_day.split("-")[1])
@@ -210,7 +214,7 @@ def get_remain(target_day, target_name):
     else:
         solar_month = int(target_day.split("-")[1])
         solar_day = int(target_day.split("-")[2])
-        this_date = datetime.date(this_year, solar_month, solar_day)
+        this_date = date(this_year, solar_month, solar_day)
     if today == this_date:
         remain_day = 0
         remain_tip = f"🌟 {target_name}就是今天啦！"
@@ -218,10 +222,10 @@ def get_remain(target_day, target_name):
         if target_day_year[0] == "n":
             lunar_next_date = ZhDate(
                 (this_year + 1), lunar_mouth, lunar_day).to_datetime().date()
-            next_date = datetime.date(
+            next_date = date(
                 (this_year + 1), lunar_next_date.month, lunar_next_date.day)
         else:
-            next_date = datetime.date(
+            next_date = date(
                 (this_year + 1), solar_month, solar_day)
         remain_day = int(str(next_date.__sub__(today)).split(" ")[0])
         remain_tip = f"🗓️ 距离{target_name}还有 {remain_day} 天"
@@ -236,7 +240,8 @@ def get_remain(target_day, target_name):
 
 
 def get_duration(begin_day, begin_name):
-    today = datetime.date.today()
+    ndt = nowdatetime
+    today = date(ndt.year, ndt.month, ndt.day)
     begin_day_year = begin_day.split("-")[0]
     if begin_day_year[0] == "n":
         lunar_year = int(begin_day_year[1:])
@@ -248,7 +253,7 @@ def get_duration(begin_day, begin_name):
         solar_year = int(begin_day.split("-")[0])
         solar_month = int(begin_day.split("-")[1])
         solar_day = int(begin_day.split("-")[2])
-        begin_date = datetime.date(solar_year, solar_month, solar_day)
+        begin_date = date(solar_year, solar_month, solar_day)
     if today == begin_date:
         duration_day = 0
         duration_tip = f"🌟 {begin_name}就是今天啦！"
@@ -326,12 +331,12 @@ def get_one():
 # 处理多图文内容增加
 
 
-def handle_extra(out_title, inner_title, content, pic, link):
+def handle_extra(out_title, inner_title, content, pic, article_link):
     if msg_type == "2":
         picurl = pic if pic else get_pic()
         inner_title = inner_title.replace("\n", "\\n")
         content = content.replace("\n", "\\n")
-        url = link if link else f"https://ii.vercel.app/show/?t={inner_title}&p={picurl}&c={content}"
+        url = article_link if article_link else f"{link}?t={inner_title}&p={picurl}&c={content}"
         return {
             "title": out_title,
             "url": url,
@@ -354,6 +359,7 @@ def handle_message():
 
     bing_pic = ""
     bing_tip = ""
+    bing_title = ""
     bing_data = get_bing()
     if bing_data:
         bing_pic = bing_data["bing_pic"]
@@ -398,7 +404,7 @@ def handle_message():
     article = [{
         "title": today_date + "\n" + bing_title,
         "description": info_desp,
-        "url": f"https://ii.vercel.app/show/?t={today_date}&p={bing_pic}&c={bing_tip}\\n\\n{info_detail}",
+        "url": f"{link}?t={today_date}&p={bing_pic}&c={bing_tip}\\n\\n{info_detail}",
         "picurl": bing_pic
     }]
 
@@ -437,35 +443,77 @@ def get_token(corpid, corpsecret):
         return None
 
 
-# 推送信息
+# 处理页面
 
 
-def push(token, data):
-    url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + token
-    res = requests.post(url, json=data).json()
-    if res["errcode"] == 0:
-        print("企业微信消息发送成功")
-        return 1
-    elif res["errcode"] != 0:
-        print("企业微信消息发送失败: "+str(res))
-        return 0
+def handle_html(url_data):
+    with open(os.path.join(os.path.dirname(__file__), "show.html"), 'r', encoding='utf-8') as f:
+        html = f.read()
+    p = url_data.get("p")
+    t = url_data.get("t")
+    c = url_data.get("c")
+    if p:
+        html = html.replace(".pic{display:none}", "").replace("<&p&>", p)
+    if t:
+        t = t.replace("\\n", "<br/>")
+        html = html.replace(".title{display:none}", "").replace("<&t&>", t)
+    if c:
+        c = c.replace("\\n", "<br/>")
+        html = html.replace(".content{display:none}", "").replace("<&c&>", c)
+    return html
+
+
+# 主函数
 
 
 def main():
     if corpid and corpsecret and agentid:
-        values = handle_message()
+        data = handle_message()
         token = get_token(corpid, corpsecret)
         if token is None:
-            return
-        push(token, values)
-        return
+            return 0
+        url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + token
+        res = requests.post(url, json=data).json()
+        if res["errcode"] == 0:
+            print("企业微信消息发送成功")
+            return 1
+        elif res["errcode"] != 0:
+            print("企业微信消息发送失败: "+str(res))
+            return 0
     else:
         print("企业微信机器人配置缺失")
-        return
+        return 0
+
+
+# 腾讯云入口函数
 
 
 def main_handler(event, context):
-    main()
+    url_data = event.get("queryString")
+    if url_data:
+        html = handle_html(url_data)
+        return {
+            "isBase64Encoded": False,
+            "statusCode": 200,
+            "headers": {"Content-Type": "text/html"},
+            "body": html
+        }
+    else:
+        res = main()
+        if res:
+            return {
+                "isBase64Encoded": False,
+                "statusCode": 200,
+                "headers": {"Content-Type": "text/html"},
+                "body":'{"code":"200","message":"企业微信消息发送成功"}' 
+            }
+        else:
+            return {
+                "isBase64Encoded": False,
+                "statusCode": 404,
+                "headers": {"Content-Type": "text/html"},
+                "body":'{"code":"404","message":"企业微信消息发送失败"}' 
+            }
 
 
 def handler(event, context):
