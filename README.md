@@ -1,6 +1,8 @@
 <h1 align="center">DailyInfo</h1>
 <h6 align="center">基于企业微信的每日图文推送</h6>
 
+**❗︎严禁任何商业化行为，否则追究法律责任**
+
 **❗︎重大更新，图文详情页回归，请先[更新](https://kdocs.cn/l/csn6eqw93kQZ?linkname=smWY0eb8y2)后进行[页面配置](
 https://kdocs.cn/l/csn6eqw93kQZ?linkname=DE0uPt3Xwk)**
 
