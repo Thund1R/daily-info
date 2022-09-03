@@ -3,14 +3,13 @@
 
 **❗︎︎本项目采用[GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt)协议，仅供个人学习和使用，未授权任何商业化、付费行为，包括但不限于源代码、教程、代建、代搭。严禁一切不尊重开发者、不尊重版权的行为，违者后果自负。使用本项目源码/教程即视为同意本条款，本人保留对一切违反本条款行为诉诸法律的权利。**
 
-**❗︎新增对标题、称呼、第一段内容、头图及其类型的自定义，允许单图文情况下关闭头图**
+**❗︎2022年9月3日已更新，[更新日志](./docs/update.md)**
 
-**❗︎图文详情页回归，请先[更新](https://kdocs.cn/l/csn6eqw93kQZ?linkname=smWY0eb8y2)后进行[页面配置](
-https://kdocs.cn/l/csn6eqw93kQZ?linkname=DE0uPt3Xwk)**
-
-**❗︎[点此前往完整版部署教程](https://www.kdocs.cn/l/csn6eqw93kQZ)**
+**❗︎[点此前往部署教程获取方式](https://www.kdocs.cn/l/csn6eqw93kQZ)** **或扫描文末二维码，关注微信公众号 “勃然大陆” ，回复 “教程” 即可**
 
 **❗︎目前只支持云服务器或腾讯云函数等IP固定的平台部署**
+
+**❗︎已知Bug：云服务器部署用户会因 ‘ 等字符的转义处理错误导致之后的内容无法显示**
 
 ## Introduction
 
@@ -58,13 +57,15 @@ https://kdocs.cn/l/csn6eqw93kQZ?linkname=DE0uPt3Xwk)**
 
 ## Deployment
 
-部署教程完整版：[金山文档](https://www.kdocs.cn/l/csn6eqw93kQZ) (实时更新)       [酷安图文](https://www.coolapk.com/feed/38775487?shareKey=YTYyZmUyYjMxMGIxNjMwYTRkYTc~)
+部署教程完整版：扫描文末二维码，关注微信公众号 “勃然大陆” ，回复 “教程” 即可获得最新教程地址
+
+​                               [金山文档](https://www.kdocs.cn/l/csn6eqw93kQZ)   [酷安图文](https://www.coolapk.com/feed/38775487?shareKey=YTYyZmUyYjMxMGIxNjMwYTRkYTc~)
 
 部署教程精简版：[部署步骤](./docs/deployment.md)
 
 ## Update
 
-[更新日志](https://kdocs.cn/l/csn6eqw93kQZ?linkname=PxK8H8tFA1)
+每次更新详情请看 [更新日志](./docs/update.md)
 
 ## Notice
 
@@ -86,11 +87,15 @@ https://kdocs.cn/l/csn6eqw93kQZ?linkname=DE0uPt3Xwk)**
 
 感谢小红书用户猪咪不是猪、纠结当道（Github：rxrw）、酷安用户limobb（Github：limoest）等大佬的创意与部分代码参考
 
-感谢所有支持、使用、打赏的用户
+感谢所有支持、使用、打赏的用户。
 
 不足之处，大家多多包涵，有什么问题可以进群交流反馈
 
+欢迎关注微信公众号“**勃然大陆**”，回复 “**教程**” 即可获得最新教程地址
+
 欢迎Star、Fork、PR，也欢迎打赏，再次感谢
+
+![](https://b2.kuibu.net/file/imgdisk/2022/09/03/d871239275b8d9cfdc6bfe632c0f8d02.png)
 
 ![](https://b2.kuibu.net/file/imgdisk/2022/08/30/WPS.png)
 
