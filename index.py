@@ -1,6 +1,14 @@
+'''
+Author: thund1r thuncoder@foxmail.com
+Date: 2022-08-22 15:41:27
+LastEditTime: 2022-09-16 16:12:09
+Description: 主函数
+
+Copyright (c) 2022 by thund1r thuncoder@foxmail.com, All Rights Reserved. 
+'''
+# -*- coding: utf8 -*-
 import os
 import requests
-import json
 from datetime import datetime, date, timedelta
 import re
 import config
@@ -17,13 +25,15 @@ title = config.get("title")
 content = config.get("content")
 call = config.get("call")
 pic = config.get("pic")
-pic_type = config.get("pictype") if config.get("pictype") else "fengjing"
+pic_type = config.get("pictype")
+tian = config.get("tian")
 msg_type = str(config.get("msgtype")) if config.get("msgtype") else "1"
-city_name_list = config.get_list("city")
+wea_city_list = config.get_list("city")
 target_day_list = config.get_list("targetday")
 target_name_list = config.get_list("targetname")
 begin_day_list = config.get_list("beginday")
 begin_name_list = config.get_list("beginname")
+yq_city_list = config.get_list("yqcity")
 
 
 # 获取标题数据
@@ -38,55 +48,34 @@ def get_my_title():
 
 # 获取自定义第一段内容数据
 def get_my_content():
+    content_list = []
+    tian_key = tian
+    today_tip = get_today()["today_tip"]
+    content_list.append("\n"+today_tip)
     my_content = content
     if my_content:
-        return my_content
-    else:
-        # 需要通过接口获取动态内容时，请替换下一行内容
+        content_list.append(my_content)
+    if tian_key:
+        chp_tip = get_chp(tian_key)
+        if chp_tip:
+            content_list.append(chp_tip)
+    # 加入其他数据作为第一段在这里接收
+    return '\n'.join(content_list)
+
+
+# # 获取天行彩虹屁
+def get_chp(tian_key):
+    try:
+        chp_url = f"http://api.tianapi.com/caihongpi/index?key={tian_key}"
+        chp_res = requests.get(chp_url).json()
+        chp_tip = "🌈 " + chp_res["newslist"][0]["content"]
+        return chp_tip
+    except Exception as e:
+        print("获取彩虹屁数据出错，请检查是否正确填写天行Key，是否申请彩虹屁接口:", e)
         return None
 
 
-# # 获取天行彩虹屁作为第一段内容，启用时请删除或注释掉上方get_my_content
-# def get_my_content():
-#     my_content = content
-#     if my_content:
-#         return my_content
-#     else:
-#         try:
-#             caihong_url = "http://api.tianapi.com/caihongpi/index?key="+"你的天行Key"
-#             caihong_res = requests.get(caihong_url).json()
-#             caihong_item0 = caihong_res["newslist"][0]["content"]
-#             caihong_tip = "🌈 " + caihong_item0
-#             return caihong_tip
-#         except Exception as e:
-#             print("获取彩虹屁数据出错:", e)
-#             return None
-
-
-# # 示例：获取木小果平台彩虹屁作为第一段内容，启用时请删除或注释掉上方get_my_content
-# def get_my_content():
-#     my_content = content
-#     if my_content:
-#         return my_content
-#     else:
-#         try:
-#             # 接口地址
-#             caihong_url = "https://api.muxiaoguo.cn/api/caihongpi?api_key=" + "你的木小果平台Key"
-#             # 数据结果并转换成json格式
-#             caihong_res = requests.get(caihong_url).json()
-#             print("获取彩虹屁json数据:", caihong_res)
-#             # 数据结果是{"code":200,"msg":"success","data":{"comment":"遇见你以后，我睁眼便是花田，闭眼便是星空。"}}
-#             # 根据数据的层级数和Key获取彩虹屁数据
-#             caihong_item0 = caihong_res["data"]["comment"]
-#             # 拼接数据
-#             caihong_tip = "🌈 " + caihong_item0
-#             return caihong_tip
-#         except Exception as e:
-#             print("获取彩虹屁数据出错:", e)
-#             return None
-
-
-# 获取自定义图片数据
+# 获取自定义头图数据
 def get_my_pic():
     my_pic = pic
     if my_pic:
@@ -95,20 +84,17 @@ def get_my_pic():
         return None
 
 
-# # 示例：获取随机图片作为头图(已经自带本功能，填写或者动态获取title、content都会触发)
-# def get_my_pic():
-#     my_pic = pic
-#     if my_pic:
-#         return my_pic
-#     else:
-#         try:
-#             pic_url = f"https://api.btstu.cn/sjbz/api.php?format=json&lx=fengjing"
-#             pic_res = requests.get(pic_url).json()
-#             print("获取自定义图片json数据:", pic_res)
-#             return pic_res["imgurl"]
-#         except Exception as e:
-#             print("获取随机图片数据出错:", e)
-#             return None
+# 获取随机图片链接数据
+# 来自搏天API:https://api.btstu.cn/
+def get_random_pic():
+    lx = pic_type if pic_type else "fengjing"
+    try:
+        pic_url = f"https://api.btstu.cn/sjbz/api.php?format=json&lx={lx}"
+        r = requests.get(pic_url).json()
+        return r["imgurl"]
+    except Exception as e:
+        print("获取随机图片数据出错:", e)
+        return None
 
 
 # 获取金山词霸数据
@@ -130,7 +116,7 @@ def get_ciba():
 
 # 获取XXX自定义图片与文字函数可以放置在此
 # 参考上方获取金山词霸数据get_ciba()代码编写与位置放置，注意缩进
-# 务必要在下方handle_message()里编写接收自定义数据的代码
+# 务必要在下方handle_message()里编写加入自定义数据的代码
 # 具体内容请参考并使用template.py进行测试
 # def get_XXX():
 #     try:
@@ -153,26 +139,13 @@ def get_ciba():
 #         return None
 
 
-# 获取随机图片链接数据
-# 来自搏天API:https://api.btstu.cn/
-def get_random_pic():
-    lx = pic_type if pic_type != "none" else "fengjing"
-    try:
-        pic_url = f"https://api.btstu.cn/sjbz/api.php?format=json&lx={lx}"
-        r = requests.get(pic_url).json()
-        return r["imgurl"]
-    except Exception as e:
-        print("获取随机图片数据出错:", e)
-        return None
-
-
-# 获取当前日期与招呼数据
+# 获取今日日期数据
 def get_today():
     ndt = nowdatetime
     d = ndt.strftime("%Y{y}%m{m}%d{d}").format(y='年', m='月', d='日')
     w = int(ndt.strftime("%w"))
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
-    today_date = d + " " + week_list[w] + " "
+    today_date = f"{d} {week_list[w]} "
     now_time = ndt.strftime("%H:%M:%S")
     time_tip = ""
     if "00:00:00" <= now_time < "06:00:00":
@@ -187,8 +160,8 @@ def get_today():
         time_tip = "下午好"
     elif "18:00:00" <= now_time < "23:59:59":
         time_tip = "晚上好"
-    time_tip = time_tip + " ~ " + get_emoticon()
-    today_tip = (call+time_tip) if call else time_tip
+    time_tip = f"{time_tip} ~ {get_emoticon()}"
+    today_tip = call + time_tip if call else time_tip
     return {
         "today_date": today_date,
         "today_tip": today_tip
@@ -207,10 +180,10 @@ def get_bing():
     try:
         bing_url = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1"
         res = requests.get(bing_url).json()
-        bing_pic = "https://cn.bing.com/"+res["images"][0]["url"]
+        bing_pic = "https://cn.bing.com/" + res["images"][0]["url"]
         bing_title = res["images"][0]["title"]
-        bing_content = re.sub(u"\\(.*?\\)", "", res["images"][0]["copyright"])
-        bing_tip = bing_title+"——"+bing_content
+        bing_content = re.sub("\\(.*?\\)", "", res["images"][0]["copyright"])
+        bing_tip = f"{bing_title}——{bing_content}"
         return {
             "bing_pic": bing_pic,
             "bing_tip": bing_tip
@@ -224,8 +197,7 @@ def get_bing():
 def get_weather(city_name):
     try:
         city_id = None
-        weather_list = []
-        weather_info = None
+        weather_tip = None
         city = city_name.split("-")[0]
         county = city_name.split("-")[1]
         city_url = f"https://geoapi.qweather.com/v2/city/lookup?&adm={city}&key={qweather}&location={county}"
@@ -238,10 +210,11 @@ def get_weather(city_name):
                 f"没有找到{city_name}这个地方，请检查city值是否正确，格式是否为 省/市-市/区/县 ，例如 成都-双流&&江苏-江宁")
         if city_id:
             # 获取逐天天气预报，有很多天气类信息，可以根据自己需要进行获取和拼接
-            # 具体请参考和风天气API开发文档https://dev.qweather.com/docs/api/weather/weather-daily-forecast/
+            # 具体请参考和风天气逐天天气预报开发文档https://dev.qweather.com/docs/api/weather/weather-daily-forecast/
             weather_url = f"https://devapi.qweather.com/v7/weather/3d?key={qweather}&location={city_id}"
             weather_json = requests.get(weather_url).json()
             weather_code = weather_json["code"]
+            weather_list = []
             if weather_code.__eq__("200"):
                 temp = weather_json["daily"][0]
                 textDay = temp["textDay"]
@@ -250,21 +223,21 @@ def get_weather(city_name):
                 weather_icon = get_weather_icon(textDay)
                 weather_tip = weather_icon+" "+county+textDay+"，"+tempMin+"~"+tempMax+"℃"
                 weather_list.append(weather_tip)
-            # 获取生活指数，有很多生活类信息，可以根据自己需要进行获取和拼接
-            # 具体请参考和风天气API开发文档https://dev.qweather.com/docs/api/indices/
-            life_url = f"https://devapi.qweather.com/v7/indices/1d?type=0&location={city_id}&key={qweather}"
+            # 获取穿衣指数。生活指数有很多信息，可以根据自己需要进行获取和拼接
+            # 具体请参考和风天气生活指数开发文档https://dev.qweather.com/docs/api/indices/
+            life_url = f"https://devapi.qweather.com/v7/indices/1d?type=3&location={city_id}&key={qweather}"
             life_json = requests.get(life_url).json()
             life_code = life_json["code"]
             if life_code.__eq__("200"):
-                life_tip = "👔 "+life_json["daily"][2]["text"]
+                life_tip = "👔 " + life_json["daily"][0]["text"]
                 weather_list.append(life_tip)
             # 需要和风天气其他接口的信息请参考以上代码格式进行获取和添加，所有开发文档https://dev.qweather.com/docs/api/
 
-            weather_info = '\n'.join(weather_list)
+            weather_tip = '\n'.join(weather_list)
         else:
             print(
                 f"获取{city_name}ID失败，请检查qweather、city值是否正确，city格式是否为 省/市-市/区/县 ，例如 四川-成都&&江苏-江宁")
-        return weather_info
+        return weather_tip
     except Exception as e:
         print(f"获取{city_name}和风天气数据出错:", e)
         return None
@@ -371,7 +344,7 @@ def get_elemone(elem):
     return elem[1]
 
 
-# 获取所有日期数据
+# 获取所有日期提醒数据
 def get_days_tip():
     days_list = []
     days_tip = ""
@@ -389,7 +362,6 @@ def get_days_tip():
             print("获取纪念日数据出错，请检查纪念日targetname与targetday数量是否相等")
     else:
         print("未配置纪念日")
-
     begin_res = ""
     if begin_day_list or begin_name_list:
         if len(begin_day_list) == len(begin_name_list):
@@ -404,7 +376,6 @@ def get_days_tip():
             print("获取单日数据出错，检查单日beginname与beginday数量是否相等")
     else:
         print("未配置单日")
-
     days_list = list(filter(None, days_list))
     if days_list:
         days_list.sort(key=get_elemone)
@@ -430,83 +401,169 @@ def get_one():
         return None
 
 
-# 处理多图文内容
-def handle_extra(out_title, inner_title, content, pic, art_link):
-    if msg_type == "2":
-        if out_title or inner_title or content or pic or art_link:
-            own_link = link
-            if out_title is None and content:
-                out_title = content
-            elif out_title is None and inner_title:
-                out_title = inner_title
-            elif out_title is None:
-                out_title = "查看图片"
+# 获取城市疫情数据
+def get_yq(city_name):
+    try:
+        res = requests.get(
+            f'https://covid.myquark.cn/quark/covid/data/index_data?format=json&method=Huoshenshan.ncov2022&city={city_name}').json()['data']
+        if len(res['cityData']) == 0:
+            res['cityData'] = res['provinceData']
+        yq_res_list = [
+            {"desc": "🤒 新增确诊/无症状",
+                "detail": str(res['cityData']["sure_new_loc"])+"/" + str(res['cityData']["sure_new_hid"])},
+            {"desc": "😷 现有确诊",
+                "detail": res['cityData']["present"]},
+            {"desc": "⛔️ 高/中风险区",
+                "detail": str(res['cityData']["danger"]["1"]) + "/" + str(res['cityData']["danger"]["2"])}
+        ]
+        yq_tip_list = []
+        yq_tip_list.append(f'🏥 {city_name}疫情（{(res["time"][4:])}）')
+        for item in yq_res_list:
+            yq_tip_list.append(item['desc'] + "：" + str(item['detail']))
+        yq_tip = '\n'.join(yq_tip_list)
+        return yq_tip
+    except Exception as e:
+        print("获取疫情数据失败：", e)
+        return None
 
-            picurl = pic if pic else get_random_pic()
-            inner_title = inner_title.replace(
-                "\n", "\\n") if inner_title else None
-            content = content.replace("\n", "\\n") if content else None
-            url = art_link if art_link else f"{own_link}?t={inner_title}&p={picurl}&c={content}"
-            return {
-                "title": out_title,
-                "url": url,
-                "picurl": picurl
-            }
-        else:
-            print("多图文没有任何内容，生成链接失败")
-            return None
+# 获取所有疫情数据
+
+
+def get_map_yq(city_name):
+    if city_name:
+        map_yq_tip = None
+        yq_list = list(map(get_yq, city_name))
+        yq_list = list(filter(None, yq_list))
+        if yq_list:
+            map_yq_tip = "\n".join(yq_list)
+        return map_yq_tip
     else:
+        print("没有填写疫情数据城市")
+        return None
+
+
+# 处理多图文内容
+def handle_multi(out_title, inner_title, content, pic, art_link):
+    if msg_type != "2":
+        return None
+    if out_title or inner_title or content or pic or art_link:
+        own_link = link
+        if out_title is None:
+            if content:
+                out_title = content
+            elif inner_title:
+                out_title = inner_title
+            else:
+                out_title = "查看图片"
+        picurl = pic or get_random_pic()
+        inner_title = inner_title.replace("\n", "\\n") if inner_title else None
+        content = content.replace("\n", "\\n") if content else None
+        url = art_link or f"{own_link}?t={inner_title}&p={picurl}&c={content}"
+        return {
+            "title": out_title,
+            "url": url,
+            "picurl": picurl
+        }
+    else:
+        print("多图文没有任何内容，生成链接失败")
         return None
 
 
 # 处理所有信息
 def handle_message():
+    info_list = []
+    multi_list = []
     lx = pic_type
     own_link = link
+    own_pic = get_my_pic()
     own_title = get_my_title()
     own_content = get_my_content()
-    own_pic = get_my_pic()
+    info_list.append(own_content)
+
+    # 接受今日日期数据
+    today_data = get_today()
+    today_date = today_data["today_date"]
+
     # 接收必应数据
     bing_pic = ""
     bing_tip = ""
+    bing_flag = 1
     bing_data = get_bing()
     if bing_data:
         bing_pic = bing_data["bing_pic"]
         bing_tip = bing_data["bing_tip"]
 
-    info_list = []
-    extra_content = []
-    today_data = get_today()
-    today_date = today_data["today_date"]
-    today_tip = today_data["today_tip"]
-    info_list.append("\n"+today_tip)
-    if own_pic or own_title or own_content:
-        art_pic = own_pic if own_pic else get_random_pic()
-        art_title = today_date + "\n" + own_title if own_title else today_date
-        if own_content:
-            info_list.append(own_content)
-        extra_content.append(handle_extra(
-            art_title, art_title, own_content, art_pic, None))
-    elif bing_tip and lx != "none":
+    art_title = today_date
+    art_content = own_content
+    art_pic = get_random_pic()
+    if own_pic or own_title or lx:
+        if own_pic:
+            art_pic = own_pic
+        if own_title:
+            art_title += "\n" + own_title
+        multi_list.append(handle_multi(
+            art_title, art_title, art_content, art_pic, None))
+
+    elif bing_tip and bing_pic:
         art_pic = bing_pic
-        art_title = today_date + "\n" + bing_tip
-        extra_content.append(handle_extra(
-            today_date, today_date, bing_tip, bing_pic, None))
-    else:
-        art_title = today_date
-        art_pic = get_random_pic()
-        extra_content.append(handle_extra(
-            art_title, art_title, own_content, art_pic, None))
+        art_title = art_title + "\n" + bing_tip
+        multi_list.append(handle_multi(
+            art_title, art_title, art_content, art_pic, None))
+        bing_flag = 0
     art_pic = art_pic if lx != "none" else None
 
-    # 接收XXX数据请放置在下方，下列各数据放置的顺序即显示的顺序
-    # 不需要的数据请在下面删除
+    # 下面加入各数据的顺序即在卡片上显示的顺序
+    # 不需要的数据请在下面对应的段落操作
     # 不需要出现在单图文的请删除info_list.append(XXX)
-    # 不需要出现在多图文的请删除extra_content.append(XXX)
+    # 不需要出现在多图文的请删除multi_list.append(XXX)
     # 都不要的数据直接删除一整段即可
-    # 务必注意缩进，形式参考下方获取天气数据
 
-    # # 接收XXX数据
+    # 加入天气数据
+    weather_tip = get_map_weather(wea_city_list)
+    if weather_tip:
+        info_list.append(weather_tip)
+        multi_list.append(handle_multi(
+            weather_tip, "Weather", weather_tip, None, None))
+
+    # 加入日期提醒数据
+    days_tip = get_days_tip()
+    if days_tip:
+        info_list.append(days_tip)
+        multi_list.append(handle_multi(
+            days_tip, "Days", days_tip, None, None))
+
+    # 加入疫情数据
+    yq_tip = get_map_yq(yq_city_list)
+    if yq_tip:
+        info_list.append(yq_tip)
+        multi_list.append(handle_multi(
+            yq_tip, "COVID-19", yq_tip, None, None))
+
+    # 加入bing数据
+    if bing_flag and bing_pic and bing_tip:
+        multi_list.append(handle_multi(
+            "🖼️ "+bing_tip, "Bing", "🖼️ "+bing_tip, bing_pic, None))
+
+    # 加入金山词霸数据
+    ciba_data = get_ciba()
+    if ciba_data:
+        ciba_tip = ciba_data["ciba_tip"]
+        ciba_pic = ciba_data["ciba_pic"]
+        info_list.append(ciba_tip)
+        multi_list.append(handle_multi(
+            ciba_tip, "iCiba", ciba_tip, ciba_pic, None))
+
+    # 加入ONE一个数据
+    one_data = get_one()
+    if one_data:
+        one_tip = one_data["one_tip"]
+        one_pic = one_data["one_pic"]
+        info_list.append(one_tip)
+        multi_list.append(handle_multi(
+            one_tip, "ONE·一个", one_tip, one_pic, None))
+
+    # 加入自定义XXX数据可以放置在下方，务必注意缩进，格式参考上方的加入ONE一个数据
+    # # 加入XXX图文数据
     # XXX_data = get_XXX()
     # if XXX_data:
     #     XXX_tip = XXX_data["XXX_tip"]
@@ -515,42 +572,10 @@ def handle_message():
     #     # 单图文添加数据，不需要就删除下面这一句
     #     info_list.append(XXX_tip)
     #     # 多图文添加数据，不需要就删除下面这一整句
-    #     extra_content.append(handle_extra(
+    #     multi_list.append(handle_multi(
     #         out_title, inner_title, content, pic, link))
-    #     # 以上五个参数分别是多图文卡片标题（外标题）, 多图文展示页标题（内标题）, 多图文内容, 多图文头图, 自定义跳转链接
-    #     # 前三个参数必填。后两个参数pic、link没有就填None
-
-    # 接收天气数据
-    weather_tip = get_map_weather(city_name_list)
-    if weather_tip:
-        info_list.append(weather_tip)
-        extra_content.append(handle_extra(
-            weather_tip, "Weather", weather_tip, None, None))
-
-    # 接收日期数据
-    days_tip = get_days_tip()
-    if days_tip:
-        info_list.append(days_tip)
-        extra_content.append(handle_extra(
-            days_tip, "Days", days_tip, None, None))
-
-    # 接收金山词霸数据
-    ciba_data = get_ciba()
-    if ciba_data:
-        ciba_tip = ciba_data["ciba_tip"]
-        ciba_pic = ciba_data["ciba_pic"]
-        info_list.append(ciba_tip)
-        extra_content.append(handle_extra(
-            ciba_tip, "iCiba", ciba_tip, ciba_pic, None))
-
-    # 接收ONE一个数据
-    one_data = get_one()
-    if one_data:
-        one_tip = one_data["one_tip"]
-        one_pic = one_data["one_pic"]
-        info_list.append(one_tip)
-        extra_content.append(handle_extra(
-            one_tip, "ONE·一个", one_tip, one_pic, None))
+    #     # out_title多图文卡片标题, inner_title多图文展示页内标题, content多图文内容, pic多图文头图, link自定义跳转链接
+    #     # 没有的参数就填None，不能五个参数都没有
 
     # 处理文本格式
     info_content = "\n\n".join(info_list)
@@ -564,12 +589,12 @@ def handle_message():
     article = [{
         "title": art_title,
         "description": info_content,
-        "url":art_url,
+        "url": art_url,
         "picurl": art_pic
     }]
 
     if msg_type == "2":
-        article = list(filter(None, extra_content))
+        article = list(filter(None, multi_list))
     msg = {
         "touser": "@all",
         "toparty": "",
@@ -589,17 +614,14 @@ def handle_message():
 # 获取调用接口凭证
 def get_token(corpid, corpsecret):
     url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken"
-    values = {
-        "corpid": corpid,
-        "corpsecret": corpsecret,
-    }
+    values = {"corpid": corpid, "corpsecret": corpsecret}
     res = requests.get(url, params=values).json()
     if res["errcode"] == 0:
         return res["access_token"]
-    else:
-        print("企业微信access_token获取失败: " + str(res) +
-              "请检查corpid、corpsecret、agentid单词拼写是否正确，值是否有多余空格")
-        return None
+    print(
+        f"企业微信access_token获取失败： {str(res)} 请检查corpid、corpsecret、agentid是否正确填写，是否有多余空格")
+
+    return None
 
 
 # 处理图文详情页
@@ -627,13 +649,13 @@ def main():
         token = get_token(corpid, corpsecret)
         if token is None:
             return 0
-        url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + token
+        url = f"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={token}"
         res = requests.post(url, json=data).json()
         if res["errcode"] == 0:
             print("企业微信消息发送成功")
             return 1
-        elif res["errcode"] != 0:
-            print("企业微信消息发送失败: "+str(res))
+        else:
+            print(f"企业微信消息发送失败： {str(res)}")
             return 0
     else:
         print("企业微信配置缺失，请检查corpid、corpsecret、agentid是否配置，单词拼写是否正确")
