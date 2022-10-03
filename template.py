@@ -8,25 +8,28 @@
 # 每一行注释都很重要！请务必认真阅读
 # 每一行注释都很重要！请务必认真阅读
 
+# 编写并测试好的获取数据函数要一整段复制粘贴到api.py文件中
+# 另外把接收数据的一整段代码复制粘贴搭配handle.py文件的handle_msg()中
+
 # 导包，不用管它
 import requests
 
+# 以下是在api.py文件中获取数据
 
-# 编写:获取自定义文字（用于标题/第一段内容）
+# 编写:获取自定义文字
+# 以下示例代码通过接口动态获取文字内容，并且接口返回的数据为json类型
+# 不适用直接显示文字内容的接口
+# 返回其他类型的接口请自行查看接口提供商文档、示例代码
+# 自行百度学习Python request如何获取数据、Python相关语法
+# 推荐文章:https://blog.csdn.net/Aai1624/article/details/121614182
+
+# 测试成功后，复制以下代码，粘贴到api.py文件里
+# 注意缩进格式，参考下方获取彩虹屁
 def get_diy_text():
-    # 以下示例代码通过接口动态获取自定义文字内容，并且接口返回的数据为json类型
-    # 不适用直接显示文字内容的接口
-    # 其他类型接口请自行查看接口提供商文档、示例代码
-    # 自行百度学习Python request如何获取数据、Python相关语法
-    # 推荐文章:https://blog.csdn.net/Aai1624/article/details/121614182
-
-    # 测试成功后，复制以下代码，回到index.py文件
-    # 找到函数get_my_title()或get_my_content()，删除原函数最后一句return None并粘贴以下代码
-    # 注意缩进格式，参考下方获取彩虹屁作为标题
     try:
         # 接口地址
         XXX_url = "https://XXXX.XXX"
-        # 数据结果并转换成json格式
+        # 数据结果并转换成json格式，只适用于返回json数据的接口，不适用直接显示文字内容的接口
         XXX_res = requests.get(XXX_url).json()
         print("获取自定义文字json数据:", XXX_res)
 
@@ -48,47 +51,43 @@ def get_diy_text():
         print("获取自定义文字:", XXX_tip)
         return XXX_tip
     except Exception as e:
-        print("获取自定义文字出错:", e)
+        print("获取自定义文字错误:", e)
         return None
 
 
-# # 示例：获取彩虹屁作为标题
-# def get_my_title():
-#     my_title = title
-#     if my_title:
-#         return my_title
-#     else:
-#         try:
-#             # 接口地址
-#             caihong_url = "https://api.muxiaoguo.cn/api/caihongpi?api_key=" + 你的木小果平台Key
-#             # 数据结果并转换成json格式
-#             caihong_res = requests.get(caihong_url).json()
-#             # 数据结果是{"code":200,"msg":"success","data":{"comment":"遇见你以后，我睁眼便是花田，闭眼便是星空。"}}
-#             # 根据数据在列表[]中的第n个（从0开始数）和在字典{}中的键名获取数据
-#             caihong_item0 = caihong_res["data"]["comment"]
-#             # 拼接数据
-#             caihong_tip = "🌈 " + caihong_item0
-#             return caihong_tip
-#         except Exception as e:
-#             print("获取彩虹屁数据出错:", e)
-#             return None
+# # 示例：获取彩虹屁
+# def get_chp():
+#     try:
+#         # 接口地址
+#         caihong_url = "https://api.muxiaoguo.cn/api/caihongpi?api_key=" + 你的木小果平台Key
+#         # 数据结果并转换成json格式
+#         caihong_res = requests.get(caihong_url).json()
+#         # 数据结果是{"code":200,"msg":"success","data":{"comment":"遇见你以后，我睁眼便是花田，闭眼便是星空。"}}
+#         # 根据数据在列表[]中的第n个（从0开始数）和在字典{}中的键名获取数据
+#         caihong_item0 = caihong_res["data"]["comment"]
+#         # 拼接数据
+#         caihong_tip = "🌈 " + caihong_item0
+#         return caihong_tip
+#     except Exception as e:
+#         print("获取彩虹屁数据错误:", e)
+#         return None
 
 
 # 编写：获取自定义图片
-def get_diy_pic():
-    # 以下示例代码通过接口动态获取自定义文字内容，并且接口返回的数据为json类型
-    # 不适用直接显示图片的接口
-    # 其他类型接口请自行查看接口提供商文档、示例代码
-    # 自行百度学习Python request如何获取数据、Python相关语法
-    # 推荐文章:https://blog.csdn.net/Aai1624/article/details/121614182
+# 以下示例代码通过接口动态获取文字内容，并且接口返回的数据为json类型
+# 不适用直接显示图片的接口
+# 其他类型接口请自行查看接口提供商文档、示例代码
+# 自行百度学习Python request如何获取数据、Python相关语法
+# 推荐文章:https://blog.csdn.net/Aai1624/article/details/121614182
 
-    # 获取到的图片链接务必包含 http:// 或 https://，没有请自行拼接上，否则无法显示
-    # 测试成功后，复制以下代码，回到index.py文件找到函数get_my_pic()，删除原函数最后一句return None并粘贴以下代码
-    # 注意缩进格式，参考下方获取随机图片作为头图
+# 获取到的图片链接务必包含 http:// 或 https://，没有请自行拼接上，否则无法显示
+# 测试成功后，复制此段落代码，粘贴到api.py文件里
+# 注意缩进格式，参考下方获取随机图片作为头图
+def get_diy_pic():
     try:
         # 接口地址
         XXX_url = "https://XXXX.XXX"
-        # 数据结果并转换成json格式
+        # 数据结果并转换成json格式，只适用于返回json数据的接口，不适用直接显示图片的接口
         XXX_res = requests.get(XXX_url).json()
         print("获取自定义图片json数据:", XXX_res)
 
@@ -102,32 +101,27 @@ def get_diy_pic():
         print("获取自定义图片链接:", XXX_pic)
         return XXX_pic
     except Exception as e:
-        print("获取自定义图片数据出错:", e)
+        print("获取自定义图片数据错误:", e)
         return None
 
 
 # # 示例：获取随机图片作为头图(已经自带本功能，填写title、content或通过接口获取文本作为title、content都会触发)
-# def get_my_pic():
-#     my_pic = pic
-#     if my_pic:
-#         return my_pic
-#     else:
-#         try:
-#             pic_url = f"https://api.btstu.cn/sjbz/api.php?format=json&lx=fengjing"
-#             r = requests.get(pic_url).json()
-#             return r["imgurl"]
-#         except Exception as e:
-#             print("获取随机图片数据出错:", e)
-#             return None
+# def get_diy_pic():
+#     try:
+#         pic_url = f"https://api.btstu.cn/sjbz/api.php?format=json&lx=fengjing"
+#         r = requests.get(pic_url).json()
+#         return r["imgurl"]
+#     except Exception as e:
+#         print("获取随机图片数据错误:", e)
+#         return None
 
 
 # 编写:获取XXX自定义图片与文字
 # 单图文场景下只显示文字，显示位置取决于handle_message中放置顺序
 # 多图文场景下即新增一篇文章，没有图片会获取随机图片。请注意，多图文最多支持总共8条图文
 # 获取数据方法参考上方get_diy_text()、get_diy_pic()，仅返回值样式不同，参考下方get_ciba()
-# 另外需要在handle_message()中接收数据
-# 测试成功后把此函数复制粘贴回index.py，参考获取金山词霸数据get_ciba()位置放置
-# 务必要把下方handle_message()里的方法放到index.py-handle_message()想要放到的位置
+
+# 测试成功后把此函数复制粘贴回api.py，参考获取金山词霸数据get_ciba()位置放置
 def get_XXX():
     try:
         XXX_url = "https://XXXX.XXX"
@@ -145,7 +139,7 @@ def get_XXX():
         print("获取XXX数据:", res)
         return res
     except Exception as e:
-        print("获取XXX数据出错:", e)
+        print("获取XXX数据错误:", e)
         return None
 
 
@@ -165,16 +159,17 @@ def get_XXX():
 #         print("获取金山词霸数据:", res)
 #         return res
 #     except Exception as e:
-#         print("获取金山词霸数据出错:", e)
+#         print("获取金山词霸数据错误:", e)
 #         return None
 
 
-# 处理信息
-def handle_message():
-    # 编写:接收XXX数据
-    # 上面get_XXX()成功后务必添加下面这一段才能正常显示出来
-    # 参考 获取金山词霸数据 编写和位置摆放
-    # 此函数无法本地测试有效性，只能放回云函数的index.py以后在此部署
+# 以下是在handle.py文件中handle_msg()中接收数据
+
+# 编写:接收XXX数据
+# 上面get_XXX()成功后务必添加下面这一段才能正常显示出来
+# 参考 获取金山词霸数据 编写和位置摆放
+# 此函数无法本地测试有效性，只能放回云函数的handle.py以后再次部署
+def handle_msg():
     XXX_data = get_XXX()
     if XXX_data:
         XXX_tip = XXX_data["XXX_tip"]
@@ -207,7 +202,7 @@ if __name__ == '__main__':
     # # 获取自定义文字json数据:{"XXX":"XXXXXXXX"}
     # # 获取自定义标题:XXXXXXXXX
 
-    # get_my_pic()
+    # get_diy_pic()
     # # 执行成功后打印出来的语句样式参考:
     # # 获取自定义图片json数据:{"XXX":"XXXXXXXX"}
     # # 获取自定义图片链接:https://XXX.XXX/XXX.XXX

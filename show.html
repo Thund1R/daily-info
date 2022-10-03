@@ -9,92 +9,36 @@
     <title>DailyInfo</title>
 </head>
 
-<body>
-    <section>
-        <div class="container">
-            <div class="pic">
-                <img src='<&p&>'>
+<body style="margin: 0;padding: 0;box-sizing: border-box;">
+    <section
+        style="background: linear-gradient(to bottom right, #0184cf, #77A1D3, #a0eacf);position: relative;overflow: hidden;display: flex;justify-content: center;min-height: 100vh;">
+        <div class="container" style="padding:0 10px 60px;">
+            <div class="pic" style="display:none;margin: 16px 0; padding: 12px;
+            background-color: white;border-radius: 8px;text-align: center;font-size: 0;">
+                <img src="<&p&>" style="max-width: 100%;max-height: 100%;">
                 </img>
             </div>
-            <h2 class="title">
+            <h2 class="title" style="display:none;margin: 16px 0 6px;color: white;">
                 <&t&>
             </h2>
-            <h3 class="content">
+            <h3 class="content" style="display:none;color: white;font-size:1.25rem">
                 <&c&>
             </h3>
         </div>
-        <div id="footer">- © 2022 Thund1R -</div>
+        <div class="footer"
+            style="position: absolute;bottom: 0;text-align: center;line-height: 60px;color: white;font-weight: bold;width: 100%;height: 60px;clear: both;">
+            - © 2022 Thund1R -</div>
     </section>
 </body>
 <style>
-    /* 下面这三行切勿有任何变动 */
-    .pic{display:none}
-    .title{display:none}
-    .content{display:none}
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
     .container {
         width: 50%;
-        padding-bottom: 60px;
     }
 
-    @media screen and (max-width: 1200px) {
+    @media screen and (max-width: 800px) {
         .container {
             width: 90%;
         }
-    }
-
-    body {
-        background: linear-gradient(to bottom right, #0184cf, #77A1D3, #a0eacf);
-    }
-
-
-    .pic {
-        margin: 16px 0;
-        padding: 12px;
-        background-color: white;
-        border-radius: 8px;
-        text-align: center;
-        font-size: 0;
-    }
-
-    .title {
-        margin: 16px 0 6px;
-        color: white;
-    }
-
-    img {
-        max-width: 100%;
-        max-height: 100%;
-    }
-
-    .content {
-        color: white;
-    }
-
-    section {
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        min-height: 100vh;
-    }
-
-    #footer {
-        position: absolute;
-        bottom: 0;
-        text-align: center;
-        line-height: 60px;
-        color: white;
-        font-weight: bold;
-        width: 100%;
-        height: 60px;
-        clear: both;
     }
 </style>
 
