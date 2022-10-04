@@ -1,7 +1,7 @@
 '''
 Author: Thund1r thund1r@foxmail.com
 Date: 2022-09-22 14:37:29
-LastEditTime: 2022-10-03 04:08:27
+LastEditTime: 2022-10-05 00:13:29
 Description: 发送数据
 
 Copyright (c) 2022 by Thund1r thund1r@foxmail.com, All Rights Reserved. 
@@ -10,7 +10,6 @@ Copyright (c) 2022 by Thund1r thund1r@foxmail.com, All Rights Reserved.
 import config
 import requests
 import smtplib
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import handle
 
@@ -68,8 +67,7 @@ def send_wecom(msg_data):
 def get_beta_token():
     try:
         token_url = f"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appid}&secret={appsecret}"
-        access_token = requests.get(token_url).json()['access_token']
-        return access_token
+        return requests.get(token_url).json()['access_token']
     except Exception as e:
         print("获取access_token失败，请检查app_id和app_secret是否正确：", e)
         return None
@@ -119,9 +117,7 @@ def send_email(msg_data):
     html_data = msg_data.get("html_data")
     subject = html_data.get("t")
     subject_list = subject.split("\n")
-    html_title = None
-    if len(subject_list) == 2:
-        html_title = subject_list[1]
+    html_title = subject_list[1] if len(subject_list) == 2 else None
     em_html_data = {
         "p": html_data.get("p"),
         "t": html_title,
@@ -147,43 +143,40 @@ def send_email(msg_data):
 
 # 执行消息发送
 def send_msg():
-    wecom_res = 0
-    email_res = 0
-    res_list = []
     msg_data = {}
-    if (corpid and corpsecret and agentid) or (emailfrom and emailto_list and emailtoken):
+    res_code = 0
+    if (corpid and corpsecret and agentid) or (emailfrom and emailto_list and emailtoken) or (appid and appsecret and userid_list and templateid):
         msg_data = handle.handle_msg()
-    else:
-        return {"code": 0, "msg": "发送失败，没有配置任何推送渠道"}
-
-    if corpid and corpsecret and agentid:
-        wecom_res = send_wecom(msg_data)
-        if wecom_res == 1:
-            res_list.append("企业微信发送成功")
+        
+        wecom_tip = ""
+        wecom_res = 0
+        if corpid and corpsecret and agentid:
+            wecom_res = send_wecom(msg_data)
+            wecom_tip = "企业微信发送成功" if wecom_res == 1 else "企业微信发送失败，请检查日志"
         else:
-            res_list.append("企业微信发送失败")
-    else:
-        res_list.append("企业微信配置缺失")
-
-    if appid and appsecret and userid_list:
-        beta_res = send_beta(msg_data)
-        if beta_res == 1:
-            res_list.append("测试号发送成功")
+            wecom_tip = "企业微信配置缺失，请检查相关配置是否填写完整"
+        
+        beta_tip = ""
+        beta_res = 0
+        if appid and appsecret and userid_list and templateid:
+            beta_res = send_beta(msg_data)
+            beta_tip = "测试号发送成功" if beta_res == 1 else "测试号发送失败，请检查日志"
         else:
-            res_list.append("测试号发送失败")
-    else:
-        res_list.append("测试号配置缺失")
-
-    if emailfrom and emailto_list and emailtoken:
-        email_res = send_email(msg_data)
-        if email_res == 1:
-            res_list.append("邮件发送成功")
+            beta_tip = "测试号配置缺失，请检查相关配置是否填写完整"
+        
+        email_tip = ""
+        email_res = 0
+        if emailfrom and emailto_list and emailtoken:
+            email_res = send_email(msg_data)
+            email_tip = "邮件发送成功" if email_res == 1 else "邮件发送失败，请检查日志"
         else:
-            res_list.append("邮件发送失败")
+            email_tip = "邮件配置缺失，请检查相关配置是否填写完整"
+        
+        res_code = wecom_res or email_res or beta_res
+        res_list = [wecom_tip, beta_tip, email_tip]
+        res_msg = ";".join(res_list)
     else:
-        res_list.append("邮件配置缺失")
+        res_msg = "消息发送失败，没有完整配置任何一种推送渠道"
 
-    res_msg = ",".join(res_list)
-    res_code = wecom_res or email_res
-    res = {"code": res_code, "msg": res_msg}
-    return res
+    print(res_msg)
+    return {"code": res_code, "msg": res_msg}
