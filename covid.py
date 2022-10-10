@@ -1,7 +1,7 @@
 '''
 Author: Thund1r thund1r@foxmail.com
 Date: 2022-09-22 14:31:16
-LastEditTime: 2022-09-27 17:52:13
+LastEditTime: 2022-10-08 22:12:16
 Description: 疫情数据
 
 Copyright (c) 2022 by Thund1r thund1r@foxmail.com, All Rights Reserved. 
@@ -26,7 +26,7 @@ def get_yq(city_name):
                 "detail": str(res['cityData']["sure_new_loc"])+"/" + str(res['cityData']["sure_new_hid"])},
             {"desc": "😷 现有确诊",
                 "detail": res['cityData']["present"]},
-            {"desc": "⛔️ 高/中风险区",
+            {"desc": "⛔️ 中/高风险区",
                 "detail": str(res['cityData']["danger"]["1"]) + "/" + str(res['cityData']["danger"]["2"])}
         ]
         yq_tip_list = []
