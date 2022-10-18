@@ -1,7 +1,7 @@
 '''
 Author: Thund1r thund1r@foxmail.com
 Date: 2022-09-22 14:34:31
-LastEditTime: 2022-09-29 01:41:23
+LastEditTime: 2022-10-18 10:59:14
 Description: 处理所有数据与网页
 
 Copyright (c) 2022 by Thund1r thund1r@foxmail.com, All Rights Reserved. 
@@ -212,7 +212,7 @@ def handle_multi(out_title, inner_title, content, pic, art_link):
         if art_link is None:
             own_link = link
             if own_link:
-                multi_url = f"{own_link}?t={inner_title}&p={pic}&c={content}"
+                multi_url = f"{own_link}?t={inner_title}&p={picurl}&c={content}"
                 if len(multi_url) > 1000:
                     multi_url = multi_url[:1000]+"······"
         else:
