@@ -1,6 +1,10 @@
-<div align=center><img src="https://tc.lilinbo.cn/tx/2022/10/18/634ea12b7d569.png" alt="phone2"/></div>
-<h1 align="center">DailyInfo</h1>
-<h6 align="center">基于Python的每日图文推送</h6>
+<div align=center><img src="https://urlshare.img.ink/2022/c1aacad5a9507.png"/>
+<h1>DailyInfo</h1>
+<h6>基于Python的每日图文推送</h6>
+<a href="https://github.com/thund1r/daily-info">
+<img src="https://shields.io/badge/Daily--Info-blue?logo=github&style=for-the-badge&logoColor=white&link=https://github.com/thund1r/daily-info"></img></a>
+<a href="https://gitee.com/thund1r/daily-info"><img src="https://shields.io/badge/Daily--Info-red?logo=gitee&style=for-the-badge&logoColor=white&link=https://gitee.com/thund1r/daily-info"></img></a>
+</div></div>
 
 ## Notice
 
@@ -42,13 +46,13 @@
 
 - 单图文
 
-![](https://tc.lilinbo.cn/tx/2022/10/18/634ea14613428.png)
+<div align=center><img src="https://urlshare.img.ink/2022/0c715a8dc422b.png" width="600"/></div>
 
 - 多图文
 
-![](https://tc.lilinbo.cn/tx/2022/10/18/634ea146148b9.png)
+<div align=center><img src="https://urlshare.img.ink/2022/2f68fcaf4d39f.png" width="600"/></div>
 
-![](https://tc.lilinbo.cn/tx/2022/10/18/634ea1462c17d.png)
+<div align=center><img src="https://urlshare.img.ink/2022/0ff48f42c946c.png" width="600"/></div>
 
 ## Preparation
 
