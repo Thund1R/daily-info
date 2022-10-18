@@ -1,10 +1,12 @@
-<div align=center><img src="https://urlshare.img.ink/2022/c1aacad5a9507.png"/>
+<div align=center><img src="https://urlshare.img.ink/2022/63b4c05602c63.png"/>
 <h1>DailyInfo</h1>
-<h6>基于Python的每日图文推送</h6>
+<h6>基于 Python 的每日图文推送</h6>
 <a href="https://github.com/thund1r/daily-info">
 <img src="https://shields.io/badge/Daily--Info-blue?logo=github&style=for-the-badge&logoColor=white&link=https://github.com/thund1r/daily-info"></img></a>
 <a href="https://gitee.com/thund1r/daily-info"><img src="https://shields.io/badge/Daily--Info-red?logo=gitee&style=for-the-badge&logoColor=white&link=https://gitee.com/thund1r/daily-info"></img></a>
-</div></div>
+</div>
+
+
 
 ## Notice
 
@@ -46,13 +48,13 @@
 
 - 单图文
 
-<div align=center><img src="https://urlshare.img.ink/2022/0c715a8dc422b.png" width="600"/></div>
+<div align=center><img src="https://urlshare.img.ink/2022/f9a9f06cb0b14.png" width="600"/></div>
 
 - 多图文
 
-<div align=center><img src="https://urlshare.img.ink/2022/2f68fcaf4d39f.png" width="600"/></div>
+<div align=center><img src="https://urlshare.img.ink/2022/41d989a8bfa51.png" width="600"/></div>
 
-<div align=center><img src="https://urlshare.img.ink/2022/0ff48f42c946c.png" width="600"/></div>
+<div align=center><img src="https://urlshare.img.ink/2022/75dbbc1e4585f.png" width="600"/></div>
 
 ## Preparation
 
@@ -118,7 +120,7 @@
 
 欢迎关注微信公众号 **勃然大陆**，回复 **教程** 即可获得最新教程地址
 
-![](https://urlshare.img.ink/2022/5e64a3ae1e023.png)
+![](https://urlshare.img.ink/2022/34566799e22b4.png)
 
 
 
@@ -126,7 +128,4 @@
 
 **开源不易，如果此项目对你有帮助，欢迎为我买一杯咖啡，再次感谢。**
 
-![](https://urlshare.img.ink/2022/f5bed6e35a476.png)
-
-
-
+![](https://urlshare.img.ink/2022/38f6f1fc7ffb7.png)
