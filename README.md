@@ -1,4 +1,4 @@
-<div align=center><img src="https://urlshare.img.ink/2022/63b4c05602c63.png"/>
+<div align=center><img src="https://s1.yesimg.com/2022/63b4c05602c63.png"/>
 <h1>DailyInfo</h1>
 <h6>基于 Python 的每日图文推送</h6>
 <a href="https://github.com/thund1r/daily-info">
@@ -8,11 +8,12 @@
 
 
 
+
 ## Notice
 
 ✅**企业微信通道恢复，可信域名已有解决方法，有需要的的朋友可以进群联系群主。**
 
-🆙**2022年10月10日、18日更新，修复疫情中高风险区数据对应文字错误、多图文模式下文章图片不显示的Bug**
+🆙**2022年12月更新，修复农历纪念日计算错误的Bug。请更新代码或自行修改days.py，将days.py文件第46行 (this_year + 1) 改成 lunar_next_date.year 即可**
 
 🆙**第一个公开的付费定制DailyTip日常提醒发布，支持获取自己准备的图片，支持21种天行数据。详情请看 [更新日志](https://mp.weixin.qq.com/s/ZTDU6_vVSaNQJyu712hYDw) 。**
 
@@ -48,13 +49,13 @@
 
 - 单图文
 
-<div align=center><img src="https://urlshare.img.ink/2022/f9a9f06cb0b14.png" width="600"/></div>
+<div align=center><img src="https://s1.yesimg.com/2022/f9a9f06cb0b14.png" width="600"/></div>
 
 - 多图文
 
-<div align=center><img src="https://urlshare.img.ink/2022/41d989a8bfa51.png" width="600"/></div>
+<div align=center><img src="https://s1.yesimg.com/2022/41d989a8bfa51.png" width="600"/></div>
 
-<div align=center><img src="https://urlshare.img.ink/2022/75dbbc1e4585f.png" width="600"/></div>
+<div align=center><img src="https://s1.yesimg.com/2022/75dbbc1e4585f.png" width="600"/></div>
 
 ## Preparation
 
@@ -120,7 +121,7 @@
 
 欢迎关注微信公众号 **勃然大陆**，回复 **教程** 即可获得最新教程地址
 
-![](https://urlshare.img.ink/2022/34566799e22b4.png)
+![](https://s1.yesimg.com/2022/34566799e22b4.png)
 
 
 
@@ -128,4 +129,4 @@
 
 **开源不易，如果此项目对你有帮助，欢迎为我买一杯咖啡，再次感谢。**
 
-![](https://urlshare.img.ink/2022/38f6f1fc7ffb7.png)
+![](https://s1.yesimg.com/2022/38f6f1fc7ffb7.png)

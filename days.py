@@ -1,7 +1,7 @@
 '''
 Author: Thund1r thund1r@foxmail.com
 Date: 2022-09-22 14:26:19
-LastEditTime: 2022-09-27 11:51:07
+LastEditTime: 2022-12-29 00:47:15
 Description: 日期数据
 
 Copyright (c) 2022 by Thund1r thund1r@foxmail.com, All Rights Reserved. 
@@ -43,7 +43,7 @@ def get_remain(target_day, target_name):
             lunar_next_date = ZhDate(
                 (this_year + 1), lunar_mouth, lunar_day).to_datetime().date()
             next_date = date(
-                (this_year + 1), lunar_next_date.month, lunar_next_date.day)
+                lunar_next_date.year, lunar_next_date.month, lunar_next_date.day)
         else:
             next_date = date(
                 (this_year + 1), solar_month, solar_day)
