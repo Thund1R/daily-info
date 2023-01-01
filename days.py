@@ -1,7 +1,7 @@
 '''
 Author: Thund1r thund1r@foxmail.com
 Date: 2022-09-22 14:26:19
-LastEditTime: 2022-12-29 00:47:15
+LastEditTime: 2023-01-01 23:28:42
 Description: 日期数据
 
 Copyright (c) 2022 by Thund1r thund1r@foxmail.com, All Rights Reserved. 
@@ -29,8 +29,12 @@ def get_remain(target_day, target_name):
     if target_day_year[0] == "n":
         lunar_mouth = int(target_day.split("-")[1])
         lunar_day = int(target_day.split("-")[2])
+        last_date = ZhDate(this_year-1, lunar_mouth,
+                           lunar_day).to_datetime().date()
         this_date = ZhDate(this_year, lunar_mouth,
                            lunar_day).to_datetime().date()
+        if today < last_date:
+            this_date = last_date
     else:
         solar_month = int(target_day.split("-")[1])
         solar_day = int(target_day.split("-")[2])
@@ -132,6 +136,7 @@ def get_map_days():
         res = list(map(get_elemzero, days_list))
         days_tip = "\n".join(res)
     return days_tip
+
 
 # 获取今天
 def get_today():
