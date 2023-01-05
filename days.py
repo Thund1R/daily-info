@@ -1,7 +1,7 @@
 '''
 Author: Thund1r thund1r@foxmail.com
 Date: 2022-09-22 14:26:19
-LastEditTime: 2023-01-01 23:28:42
+LastEditTime: 2023-01-05 22:29:34
 Description: 日期数据
 
 Copyright (c) 2022 by Thund1r thund1r@foxmail.com, All Rights Reserved. 
@@ -33,7 +33,7 @@ def get_remain(target_day, target_name):
                            lunar_day).to_datetime().date()
         this_date = ZhDate(this_year, lunar_mouth,
                            lunar_day).to_datetime().date()
-        if today < last_date:
+        if today <= last_date:
             this_date = last_date
     else:
         solar_month = int(target_day.split("-")[1])
